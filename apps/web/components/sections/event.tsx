@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import { CalendarDays } from 'lucide-react';
 import { Button } from '@edu/ui/components/button';
+import ExampleImage from '@/public/images/example.jpg';
+import Link from 'next/link';
+import { PUBLIC_ROUTES } from '@/constants';
 
 const eventData = [
   {
@@ -47,13 +50,13 @@ export default function EventSection() {
           >
             <div className='relative'>
               <Image
-                src={event.image}
+                src={ExampleImage}
                 alt={event.title}
                 width={600}
                 height={400}
                 className='w-full h-56 object-cover'
               />
-              <div className='absolute top-4 left-4 bg-primary text-primary-foreground text-center rounded px-2 py-1'>
+              <div className='absolute top-4 right-4 bg-primary text-primary-foreground text-center rounded px-2 py-1'>
                 <p className='text-sm leading-none font-bold'>{event.day}</p>
                 <p className='text-[10px] uppercase'>{event.month}</p>
               </div>
@@ -72,9 +75,11 @@ export default function EventSection() {
       </div>
 
       <div className='text-center mt-10'>
-        <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
-          Xem thêm
-        </Button>
+        <Link href={PUBLIC_ROUTES.EVENTS} className='cursor-pointer'>
+          <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
+            Xem thêm
+          </Button>
+        </Link>
       </div>
     </section>
   );

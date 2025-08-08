@@ -5,14 +5,14 @@ export default function TopBar() {
   return (
     <div className='w-full bg-primary text-primary-foreground text-sm'>
       <div className='px-4 flex justify-between items-center h-8'>
-        <Link href={PUBLIC_ROUTES.HOME} className='flex items-center gap-2'>
+        <div className='flex items-center gap-2'>
           <span className='text-white'>
             <House size={16} />
           </span>
           <span className='text-xs'>
             Cổng thông tin điện tử Trường THCS Đồng Than
           </span>
-        </Link>
+        </div>
 
         <div className='flex items-center gap-4 text-xs'>
           <div className='flex items-center gap-1'>

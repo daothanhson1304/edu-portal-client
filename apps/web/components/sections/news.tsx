@@ -4,6 +4,9 @@ import { Button } from '@edu/ui/components/button';
 import { Card, CardContent } from '@edu/ui/components/card';
 import { Calendar } from 'lucide-react';
 
+import ExampleImage from '@/public/images/example.jpg';
+import { PUBLIC_ROUTES } from '@/constants';
+
 const newsData = [
   {
     date: '05/08/2025',
@@ -56,7 +59,7 @@ export default function FeaturedNewsSection() {
         <h2 className='text-primary text-sm font-semibold tracking-widest uppercase'>
           Tin tức sự kiện
         </h2>
-        <h1 className='text-4xl font-bold text-secondary-foreground mt-2'>
+        <h1 className='text-4xl font-bold text-secondary mt-2'>
           Tin tức nổi bật
         </h1>
       </div>
@@ -65,10 +68,10 @@ export default function FeaturedNewsSection() {
         {newsData.map((news, index) => (
           <Card key={index} className='overflow-hidden'>
             <Image
-              src={news.image}
+              src={ExampleImage}
               alt={news.title}
               width={600}
-              height={400}
+              height={600}
               className='w-full h-48 object-cover'
             />
             <CardContent className='p-4'>
@@ -78,7 +81,7 @@ export default function FeaturedNewsSection() {
               </div>
               <Link
                 href={news.link}
-                className='font-semibold hover:underline text-base text-blue-800 line-clamp-3'
+                className='font-semibold hover:underline text-base text-secondary line-clamp-3'
               >
                 {news.title}
               </Link>
@@ -88,9 +91,11 @@ export default function FeaturedNewsSection() {
       </div>
 
       <div className='text-center mt-8'>
-        <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
-          Xem thêm
-        </Button>
+        <Link href={PUBLIC_ROUTES.NEWS} className='cursor-pointer'>
+          <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
+            Xem thêm
+          </Button>
+        </Link>
       </div>
     </section>
   );
