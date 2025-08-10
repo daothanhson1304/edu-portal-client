@@ -21,7 +21,9 @@ export default function Menu() {
             <ul className='grid w-[200px] gap-4'>
               <li>
                 <NavigationMenuLink asChild>
-                  <Link href='#'>Tổng quan</Link>
+                  <Link href={PUBLIC_ROUTES.HERITAGE}>
+                    Lịch sử và truyền thống
+                  </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
                   <Link href='#'>Cơ cấu tổ chức</Link>

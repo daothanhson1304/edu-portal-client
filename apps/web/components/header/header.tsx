@@ -14,7 +14,7 @@ export default function Header() {
               <p className='text-sm text-primary font-bold'>
                 TRƯỜNG TRUNG HỌC CƠ SỞ ĐỒNG THAN
               </p>
-              <p className='text-xs'>Trường đạt chuẩn Quốc gia</p>
+              <p className='text-xs'>Trường đạt chuẩn quốc gia mức độ 1</p>
             </div>
           </div>
         </Link>

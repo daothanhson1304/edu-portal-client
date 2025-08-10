@@ -16,4 +16,5 @@ export const PUBLIC_ROUTES = {
   ABOUT: '/about',
   NOTIFICATIONS: '/notifications',
   DOCUMENT: '/document',
+  HERITAGE: '/heritage',
 };
