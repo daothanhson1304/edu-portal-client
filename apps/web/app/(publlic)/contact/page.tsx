@@ -6,7 +6,7 @@ export default function ContactPage() {
   return (
     <section className='py-16 px-6 max-w-3xl mx-auto'>
       <div className='text-center mb-10'>
-        <h1 className='text-4xl font-bold text-secondary-foreground'>
+        <h1 className='text-4xl font-bold text-primary'>
           Liên hệ với chúng tôi
         </h1>
         <p className='text-muted-foreground mt-2'>

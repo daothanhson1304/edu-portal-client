@@ -17,4 +17,7 @@ export const PUBLIC_ROUTES = {
   NOTIFICATIONS: '/notifications',
   DOCUMENT: '/document',
   HERITAGE: '/heritage',
+  TEAMS: '/teams',
+  FACILITIES: '/facilities',
+  VISION: '/vision',
 };

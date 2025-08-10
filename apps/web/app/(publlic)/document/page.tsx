@@ -47,10 +47,7 @@ export default function RegulationDocumentsPage() {
   return (
     <section className='py-16 px-6 max-w-7xl mx-auto'>
       <div className='text-center mb-10'>
-        <p className='text-primary uppercase font-semibold tracking-wide'>
-          Quy chế, quy định
-        </p>
-        <h1 className='text-4xl font-bold text-secondary-foreground mt-2'>
+        <h1 className='text-4xl font-bold text-primary mt-2'>
           Các văn bản quy định về học tập và rèn luyện tại Trường THCS Đồng Than
         </h1>
       </div>

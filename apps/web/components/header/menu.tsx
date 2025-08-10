@@ -26,13 +26,14 @@ export default function Menu() {
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href='#'>Cơ cấu tổ chức</Link>
+                  <Link href={PUBLIC_ROUTES.TEAMS}>Cơ cấu tổ chức</Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href='#'>Nguồn lực</Link>
+                  <Link href={PUBLIC_ROUTES.VISION}>Tầm nhìn – Sứ mạng</Link>
                 </NavigationMenuLink>
+
                 <NavigationMenuLink asChild>
-                  <Link href='#'>Cơ sở vật chất</Link>
+                  <Link href={PUBLIC_ROUTES.FACILITIES}>Cơ sở vật chất</Link>
                 </NavigationMenuLink>
               </li>
             </ul>

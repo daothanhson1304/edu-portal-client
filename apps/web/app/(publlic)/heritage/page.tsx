@@ -1,6 +1,3 @@
-'use client';
-
-import React, { useState } from 'react';
 import Image from 'next/image';
 import HistoryTable from './components/history';
 
@@ -13,7 +10,7 @@ export default function SchoolHistoryPage() {
   };
 
   const content = {
-    title: `LỊCH SỬ & TRUYỀN THỐNG — ${school.name}`,
+    title: `Lịch sử & Truyền thống — ${school.name}`,
     lead: `${school.name}, tọa lạc tại ${school.address}, được thành lập vào năm ${school.foundedYear}. Trong suốt chặng đường 60 năm, từ khi thành lập vào năm 1960 đến nay, qua nhiều giai đoạn phát triển, trưởng thành, thầy và trò trường THCS Đồng Than luôn nỗ lực phấn đấu đạt danh hiệu Tập thể lao động xuất sắc, nhiều lần được nhận Bằng khen, giấy khen của tỉnh, huyện, … Đội ngũ cán bộ, giáo viên và nhân nhà trường ngày càng trưởng thành. Chất lượng giáo dục được nâng cao. Cơ ngơi nhà trường ngày một khang trang, xanh, sạch, đẹp và thân thiện. Trong bối cảnh ấy, những thành tích của thầy và trò nhà trường đạt được như những bông hoa tươi sắc điểm tô cho ngôi trường một nét đẹp riêng xứng với tên “Đồng Than - quê hương anh hùng”!`,
     history: `Tiền thân của trường là Trường cấp 2 Phổ thông Nông nghiệp Dân Chủ . Ban đầu với quy mô nhỏ, trường đã không ngừng mở rộng quy mô, nâng cấp cơ sở vật chất và đổi mới phương pháp dạy học. Sự nỗ lực của đội ngũ nhà giáo và sự ủng hộ của phụ huynh, cộng đồng đã giúp trường vươn lên đạt nhiều thành tích nổi bật.`,
     achievementsTitle: 'Thành tích nổi bật',
@@ -24,7 +21,7 @@ export default function SchoolHistoryPage() {
     ],
     futureTitle: 'Hướng tới tương lai',
     future: `Nhà trường tiếp tục đổi mới chương trình, ứng dụng công nghệ trong giảng dạy, phát triển môi trường học tập thân thiện, sáng tạo, giúp học sinh phát huy tối đa năng lực.`,
-    closing: `Trường THCS ${school.name} tự hào với bề dày lịch sử và truyền thống tốt đẹp, cam kết tiếp tục viết tiếp những trang vàng trong sự nghiệp giáo dục.`,
+    closing: `${school.name} tự hào với bề dày lịch sử và truyền thống tốt đẹp, cam kết tiếp tục viết tiếp những trang vàng trong sự nghiệp giáo dục.`,
   };
 
   return (
@@ -46,14 +43,11 @@ export default function SchoolHistoryPage() {
               <h1 className='text-2xl md:text-3xl font-semibold drop-shadow'>
                 {content.title}
               </h1>
-              <p className='mt-1 text-sm md:text-base opacity-90'>
-                `Cập nhật: ${new Date().getFullYear()}`
-              </p>
             </div>
           </div>
 
           {/* Content */}
-          <div className=''>
+          <div className='mt-10'>
             <p className=''>{content.lead}</p>
 
             <section className='mt-6'>
@@ -100,3 +94,8 @@ export default function SchoolHistoryPage() {
     </main>
   );
 }
+
+export const metadata = {
+  title: 'Lịch sử và truyền thống',
+  description: 'Lịch sử và truyền thống của trường THCS Đồng Than',
+};
