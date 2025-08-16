@@ -1,13 +1,12 @@
 import Image from 'next/image';
 
 const galleryImages = [
-  '/gallery1.jpg',
-  '/gallery2.jpg',
-  '/gallery3.jpg',
-  '/gallery4.jpg',
-  '/gallery5.jpg',
-  '/gallery6.jpg',
-  '/gallery7.jpg',
+  '/images/facilities/courtyard.png',
+  '/images/facilities/canteen.png',
+  '/images/facilities/studio.png',
+  '/images/facilities/building.png',
+  '/images/facilities/library.png',
+  '/images/facilities/auditorium.png',
 ];
 
 export default function Feature() {

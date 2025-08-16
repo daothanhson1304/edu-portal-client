@@ -35,7 +35,7 @@ export async function generateMetadata(
   const title = post.title;
   const description = post.description ?? htmlToPlain(post.content || '', 160);
 
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/news/${params.slug}`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/events/${params.slug}`;
   const image =
     post.thumbnailUrl ||
     `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/og-default.jpg`;

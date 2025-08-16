@@ -2,9 +2,7 @@ import { Manrope } from 'next/font/google';
 
 import '@edu/ui/globals.css';
 import { Providers } from '@/components/providers';
-import { Header } from '@/components/header';
-import Footer from '@/components/footer';
-import TopBar from '@/components/top-bar';
+import { Toaster } from '@edu/ui/components/sonner';
 
 const fontSans = Manrope({
   subsets: ['latin'],
@@ -26,10 +24,8 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased overflow-x-hidden`}
       >
-        <TopBar />
-        <Header />
         <Providers>{children}</Providers>
-        <Footer />
+        <Toaster />
       </body>
     </html>
   );

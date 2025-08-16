@@ -8,16 +8,30 @@ import { Card } from '@edu/ui/components/card';
 import { ImagePlus, Trash2 } from 'lucide-react';
 import TiptapEditor from '@/components/editor/tiptap-editor';
 
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@edu/ui/components/select';
+import { BASE_URL } from '@/constants';
+import { toast } from '@edu/ui/components/sonner';
+
+type PostStatus = 'draft' | 'published';
+type PostType = 'news' | 'event' | 'notice' | 'other';
+
 export default function CreatePostPage() {
   const [title, setTitle] = useState('');
+  const [type, setType] = useState<PostType | ''>('');
   const [content, setContent] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setImage(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
@@ -27,45 +41,61 @@ export default function CreatePostPage() {
     setPreviewUrl(null);
   };
 
-  const handleSubmit = async (status: 'draft' | 'published') => {
-    let uploadedImageUrl: string | null = 'null';
+  const handleResetForm = () => {
+    setTitle('');
+    setType('');
+    setContent('');
+    setImage(null);
+    setPreviewUrl(null);
+  };
 
-    if (image) {
-      const formData = new FormData();
-      formData.append('file', image);
+  const handleSubmit = async (status: PostStatus) => {
+    if (!title.trim()) return console.error('Title is required');
+    if (!content.trim()) return console.error('Content is required');
+    if (!type) return console.error('Type is required');
 
-      try {
-        const res = await fetch('http://localhost:5000/api/image', {
+    setSubmitting(true);
+    let uploadedImageUrl: string | null = null;
+
+    try {
+      if (image) {
+        const formData = new FormData();
+        formData.append('file', image);
+
+        const resUpload = await fetch(`${BASE_URL}/api/image`, {
           method: 'POST',
           body: formData,
         });
+        if (!resUpload.ok) throw new Error('Upload image failed');
 
-        const data = await res.json();
-        uploadedImageUrl = data.url;
-      } catch (err) {
-        console.error('Image upload failed', err);
-        return;
+        const dataUpload = await resUpload.json();
+        uploadedImageUrl = dataUpload.url ?? null;
       }
-    }
 
-    try {
-      const res = await fetch('http://localhost:5000/api/posts', {
+      const res = await fetch(`${BASE_URL}/api/posts`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           content,
           thumbnailUrl: uploadedImageUrl,
           status,
+          type,
         }),
       });
 
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || 'Create post failed');
+      }
+
       const data = await res.json();
-      console.log('Post created:', data);
+      toast.success('Post created successfully');
+      handleResetForm();
     } catch (err) {
       console.error('Error creating post:', err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -76,14 +106,23 @@ export default function CreatePostPage() {
         <div className='flex justify-between items-center'>
           <h1 className='text-2xl font-semibold'>Add New Post</h1>
           <div className='flex gap-2'>
-            <Button variant='outline' onClick={() => handleSubmit('draft')}>
+            <Button
+              variant='outline'
+              onClick={() => handleSubmit('draft')}
+              disabled={submitting}
+            >
               Save as Draft
             </Button>
-            <Button onClick={() => handleSubmit('published')}>Publish</Button>
+            <Button
+              onClick={() => handleSubmit('published')}
+              disabled={submitting}
+            >
+              {submitting ? 'Publishing…' : 'Publish'}
+            </Button>
           </div>
         </div>
 
-        {/* Title Input */}
+        {/* Title */}
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Post Title</label>
           <Input
@@ -91,6 +130,22 @@ export default function CreatePostPage() {
             value={title}
             onChange={e => setTitle(e.target.value)}
           />
+        </div>
+
+        {/* Type */}
+        <div className='space-y-2'>
+          <label className='text-sm font-medium'>Post Type</label>
+          <Select value={type} onValueChange={v => setType(v as PostType)}>
+            <SelectTrigger className='w-full'>
+              <SelectValue placeholder='Select a type' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='news'>News</SelectItem>
+              <SelectItem value='event'>Event</SelectItem>
+              <SelectItem value='notice'>Notice</SelectItem>
+              <SelectItem value='other'>Other</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Thumbnail Upload */}

@@ -1,22 +1,22 @@
-import Header from '@/components/header/header';
 import {
   Banner,
   Event,
   Feature,
   HighlightStats,
-  New,
+  News,
   Notification,
 } from '@/components/sections';
-export default function Page() {
+
+export default function HomePage() {
   return (
-    <main>
+    <>
       <Banner />
-      <New />
+      <News />
       <HighlightStats />
       <Event />
       <Feature />
       <Notification />
-    </main>
+    </>
   );
 }
 

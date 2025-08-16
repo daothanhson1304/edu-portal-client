@@ -1,58 +1,39 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 import { Button } from '@edu/ui/components/button';
 import { Card, CardContent } from '@edu/ui/components/card';
-import { Calendar } from 'lucide-react';
+import { BASE_URL, PUBLIC_ROUTES } from '@/constants';
+import { Post } from '@/types';
+import { formatDateTime } from '@/lib';
+import EmptySection from './empty-section';
 
-import ExampleImage from '@/public/images/example.jpg';
-import { PUBLIC_ROUTES } from '@/constants';
+const TAG = 'featured-news';
 
-const newsData = [
-  {
-    date: '05/08/2025',
-    title:
-      'Bộ trưởng Bộ Công nghệ và Truyền thông CHDCND Lào thăm và làm việc với Học viện Công nghệ Bưu...',
-    image: '/news1.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT tuyên dương, khen thưởng sinh viên đạt thành tích cao trong các cuộc thi quốc tế tại Mỹ và Úc',
-    image: '/news2.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT chủ trì mạng lưới về Công nghệ mạng thế hệ sau, Công nghệ an ninh mạng thông minh và...',
-    image: '/news3.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT trao quyết định công nhận Chuyên gia cao cấp, cố vấn đặc biệt...',
-    image: '/news4.jpg',
-    link: '#',
-  },
-  {
-    date: '31/07/2025',
-    title:
-      'Sinh viên PTIT giành huy chương Vàng thi Tin học văn phòng thế giới 2025',
-    image: '/news5.jpg',
-    link: '#',
-  },
-  {
-    date: '29/07/2025',
-    title:
-      'PTIT trao bằng Thạc Sĩ chương trình Khoa học máy tính giảng dạy bằng...',
-    image: '/news6.jpg',
-    link: '#',
-  },
-];
+async function getFeaturedNews(): Promise<Post[]> {
+  try {
+    const url = `${BASE_URL}/api/posts?type=news&limit=6`;
 
-export default function FeaturedNewsSection() {
+    const res = await fetch(url, {
+      next: { revalidate: 600, tags: [TAG] },
+    });
+    if (!res.ok) {
+      console.error('Failed to fetch news:', res.status);
+      return [];
+    }
+    const data = await res.json();
+
+    return (data?.data ?? data ?? []) as Post[];
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    return [];
+  }
+}
+
+export default async function FeaturedNewsSection() {
+  const newsData = await getFeaturedNews();
+  const isEmpty = newsData.length === 0;
+
   return (
     <section className='py-10 px-6 max-w-7xl mx-auto'>
       <div className='text-center mb-8'>
@@ -65,38 +46,61 @@ export default function FeaturedNewsSection() {
       </div>
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {newsData.map((news, index) => (
-          <Card key={index} className='overflow-hidden'>
-            <Image
-              src={ExampleImage}
-              alt={news.title}
-              width={600}
-              height={600}
-              className='w-full h-48 object-cover'
-            />
-            <CardContent className='p-4'>
-              <div className='flex items-center text-sm text-muted-foreground mb-2'>
-                <Calendar className='w-4 h-4 mr-1' />
-                <span>{news.date}</span>
-              </div>
-              <Link
-                href={news.link}
-                className='font-semibold hover:underline text-base text-secondary line-clamp-3'
+        {isEmpty ? (
+          <EmptySection
+            variant='news'
+            primaryAction={{
+              label: 'Xem giới thiệu',
+              href: PUBLIC_ROUTES.HERITAGE,
+            }}
+            secondaryAction={{
+              label: 'Liên hệ nhà trường',
+              href: PUBLIC_ROUTES.CONTACT,
+              variant: 'outline',
+            }}
+          />
+        ) : (
+          <>
+            {newsData.map((event, index) => (
+              <div
+                key={index}
+                className='bg-white shadow-md rounded overflow-hidden'
               >
-                {news.title}
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
+                <div className='relative'>
+                  <Image
+                    src={event.thumbnailUrl}
+                    alt={event.title}
+                    width={600}
+                    height={400}
+                    className='w-full h-56 object-cover'
+                  />
+                </div>
+                <div className='p-4'>
+                  <div className='flex items-center text-sm text-muted-foreground mb-2'>
+                    <Calendar className='w-4 h-4 mr-1' />
+                    <span>{formatDateTime(new Date(event.createdAt))}</span>
+                  </div>
+                  <Link
+                    href={`${PUBLIC_ROUTES.EVENTS}/${event.id}`}
+                    className='font-semibold text-secondary-foreground text-base line-clamp-3 hover:underline'
+                  >
+                    {event.title}
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
-
-      <div className='text-center mt-8'>
-        <Link href={PUBLIC_ROUTES.NEWS} className='cursor-pointer'>
-          <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
-            Xem thêm
-          </Button>
-        </Link>
-      </div>
+      {!isEmpty && (
+        <div className='text-center mt-8'>
+          <Link href={PUBLIC_ROUTES.NEWS} className='cursor-pointer'>
+            <Button className='bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded'>
+              Xem thêm
+            </Button>
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
