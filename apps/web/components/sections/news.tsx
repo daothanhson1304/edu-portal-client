@@ -1,58 +1,37 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Calendar } from 'lucide-react';
 import { Button } from '@edu/ui/components/button';
 import { Card, CardContent } from '@edu/ui/components/card';
-import { Calendar } from 'lucide-react';
+import { BASE_URL, PUBLIC_ROUTES } from '@/constants';
+import { Post } from '@/types';
+import { formatDateTime } from '@/lib';
 
-import ExampleImage from '@/public/images/example.jpg';
-import { PUBLIC_ROUTES } from '@/constants';
+const TAG = 'featured-newsqweqwqe';
 
-const newsData = [
-  {
-    date: '05/08/2025',
-    title:
-      'Bộ trưởng Bộ Công nghệ và Truyền thông CHDCND Lào thăm và làm việc với Học viện Công nghệ Bưu...',
-    image: '/news1.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT tuyên dương, khen thưởng sinh viên đạt thành tích cao trong các cuộc thi quốc tế tại Mỹ và Úc',
-    image: '/news2.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT chủ trì mạng lưới về Công nghệ mạng thế hệ sau, Công nghệ an ninh mạng thông minh và...',
-    image: '/news3.jpg',
-    link: '#',
-  },
-  {
-    date: '01/08/2025',
-    title:
-      'PTIT trao quyết định công nhận Chuyên gia cao cấp, cố vấn đặc biệt...',
-    image: '/news4.jpg',
-    link: '#',
-  },
-  {
-    date: '31/07/2025',
-    title:
-      'Sinh viên PTIT giành huy chương Vàng thi Tin học văn phòng thế giới 2025',
-    image: '/news5.jpg',
-    link: '#',
-  },
-  {
-    date: '29/07/2025',
-    title:
-      'PTIT trao bằng Thạc Sĩ chương trình Khoa học máy tính giảng dạy bằng...',
-    image: '/news6.jpg',
-    link: '#',
-  },
-];
+async function getFeaturedNews(): Promise<Post[]> {
+  try {
+    const url = `${BASE_URL}/api/posts?type=news&limit=6`;
 
-export default function FeaturedNewsSection() {
+    const res = await fetch(url, {
+      next: { revalidate: 600, tags: [TAG] },
+    });
+    if (!res.ok) {
+      console.error('Failed to fetch news:', res.status);
+      return [];
+    }
+    const data = await res.json();
+    console.log('data', data);
+    return (data?.data ?? data ?? []) as Post[];
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    return [];
+  }
+}
+
+export default async function FeaturedNewsSection() {
+  const newsData = await getFeaturedNews();
+
   return (
     <section className='py-10 px-6 max-w-7xl mx-auto'>
       <div className='text-center mb-8'>
@@ -65,29 +44,40 @@ export default function FeaturedNewsSection() {
       </div>
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {newsData.map((news, index) => (
-          <Card key={index} className='overflow-hidden'>
-            <Image
-              src={ExampleImage}
-              alt={news.title}
-              width={600}
-              height={600}
-              className='w-full h-48 object-cover'
-            />
-            <CardContent className='p-4'>
-              <div className='flex items-center text-sm text-muted-foreground mb-2'>
-                <Calendar className='w-4 h-4 mr-1' />
-                <span>{news.date}</span>
-              </div>
-              <Link
-                href={news.link}
-                className='font-semibold hover:underline text-base text-secondary line-clamp-3'
-              >
-                {news.title}
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
+        {newsData.length === 0
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className='overflow-hidden animate-pulse'>
+                <div className='w-full h-48 bg-gray-200' />
+                <CardContent className='p-4'>
+                  <div className='h-4 w-28 bg-gray-200 mb-3 rounded' />
+                  <div className='h-5 w-full bg-gray-200 rounded' />
+                </CardContent>
+              </Card>
+            ))
+          : newsData.map(news => (
+              <Card key={news.id} className='overflow-hidden gap-0'>
+                <Image
+                  src={news.thumbnailUrl}
+                  alt={news.title}
+                  width={600}
+                  height={600}
+                  className='w-full h-48 object-cover'
+                  priority={false}
+                />
+                <CardContent className='p-4'>
+                  <div className='flex items-center text-sm text-muted-foreground mb-2'>
+                    <Calendar className='w-4 h-4 mr-1' />
+                    <span>{formatDateTime(new Date(news.createdAt))}</span>
+                  </div>
+                  <Link
+                    href={`${PUBLIC_ROUTES.NEWS}/${news.id}`}
+                    className='font-semibold hover:underline text-base text-secondary line-clamp-3'
+                  >
+                    {news.title}
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
       </div>
 
       <div className='text-center mt-8'>

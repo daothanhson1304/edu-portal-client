@@ -1,0 +1,6 @@
+export const LONG_DATE_FORMAT = 'DD-MM-YYYY';
+export const SHORT_DATE_FORMAT = 'DD-MM-YYYY';
+export const TIME_FORMAT = 'HH:mm';
+export const DATE_TIME_FORMAT = `${LONG_DATE_FORMAT} ${TIME_FORMAT}`;
+export const DATE_TIME_FORMAT_SHORT = `${SHORT_DATE_FORMAT} ${TIME_FORMAT}`;
+export const DATE_TIME_FORMAT_LONG = `${LONG_DATE_FORMAT} ${TIME_FORMAT}`;

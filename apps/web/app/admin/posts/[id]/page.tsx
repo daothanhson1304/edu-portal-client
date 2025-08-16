@@ -1,4 +1,4 @@
-// app/admin/posts/[id]/page.tsx
+// app/posts/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 
@@ -14,14 +14,16 @@ type Post = {
 
 async function getPost(id: string): Promise<Post | null> {
   try {
-    const res = await fetch(`http://localhost:5000/api/posts/${id}`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/${id}`,
+      {
+        cache: 'no-store',
+      }
+    );
     if (!res.ok) return null;
     const data = await res.json();
-    return data.post; // Server returns { post: {...} }
+    return data.post;
   } catch (err) {
-    console.error('Error fetching post:', err);
     return null;
   }
 }
