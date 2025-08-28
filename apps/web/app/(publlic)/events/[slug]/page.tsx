@@ -8,7 +8,9 @@ import { Calendar } from 'lucide-react';
 
 export const revalidate = 600;
 
-type Params = { slug: string };
+type Props = {
+  params: Promise<{ slug: string }>;
+};
 
 async function fetchPost(slug: string) {
   const res = await fetch(`${BASE_URL}/api/posts/${slug}`, {
@@ -20,10 +22,11 @@ async function fetchPost(slug: string) {
 }
 
 export async function generateMetadata(
-  { params }: { params: Params },
+  { params }: Props,
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const post = await fetchPost(params.slug);
+  const { slug } = await params;
+  const post = await fetchPost(slug);
   if (!post) {
     return {
       title: 'Tin không tồn tại',
@@ -35,7 +38,7 @@ export async function generateMetadata(
   const title = post.title;
   const description = post.description ?? htmlToPlain(post.content || '', 160);
 
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/events/${params.slug}`;
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/events/${slug}`;
   const image =
     post.thumbnailUrl ||
     `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/og-default.jpg`;
@@ -62,8 +65,9 @@ export async function generateMetadata(
   };
 }
 
-export default async function NewsDetailPage({ params }: { params: Params }) {
-  const post = await fetchPost(params.slug);
+export default async function NewsDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const post = await fetchPost(slug);
   if (!post) return notFound();
 
   return (

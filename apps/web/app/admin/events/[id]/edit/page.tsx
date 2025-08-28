@@ -13,9 +13,10 @@ async function getPost(id: string) {
 export default async function EditPostPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const data = await getPost(params.id);
+  const { id } = await params;
+  const data = await getPost(id);
   if (!data) return <div className='p-6'>Không tìm thấy bài viết.</div>;
 
   const { post } = data;

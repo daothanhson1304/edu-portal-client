@@ -11,9 +11,10 @@ async function getDetail(id: string) {
 export default async function EditRulePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const rule = await getDetail(params.slug);
+  const { slug } = await params;
+  const rule = await getDetail(slug);
   if (!rule) {
     return <div className='p-6'>Không tìm thấy văn bản.</div>;
   }

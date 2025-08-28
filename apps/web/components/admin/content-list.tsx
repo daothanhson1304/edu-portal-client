@@ -114,7 +114,8 @@ export default function ContentList({
   async function toggleStatus(id: string, current?: 'draft' | 'published') {
     if (!publishable) return;
     const next = current === 'published' ? 'draft' : 'published';
-    startTransition(async () => {
+
+    const updateStatus = async () => {
       const res = await fetch(`${apiBase}/api/${resource}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -126,6 +127,10 @@ export default function ContentList({
         prev.map(p => (p.id === id ? { ...p, status: next } : p))
       );
       toast.success(next === 'published' ? 'Đã publish' : 'Đã chuyển về draft');
+    };
+
+    startTransition(() => {
+      updateStatus();
     });
   }
 
