@@ -4,6 +4,7 @@ import {
   AudioWaveform,
   BookOpen,
   Command,
+  FileText,
   Frame,
   GalleryVerticalEnd,
   Map,
@@ -30,46 +31,36 @@ const data = {
     email: 'm@example.com',
     avatar: '/avatars/shadcn.jpg',
   },
-  teams: [
-    {
-      name: 'Acme Inc',
-      logo: GalleryVerticalEnd,
-      plan: 'Enterprise',
-    },
-    {
-      name: 'Acme Corp.',
-      logo: AudioWaveform,
-      plan: 'Startup',
-    },
-    {
-      name: 'Evil Corp.',
-      logo: Command,
-      plan: 'Free',
-    },
-  ],
+
   navMain: [
     {
-      title: 'Blog Posts',
+      title: 'Bài viết',
       url: ADMIN_ROUTES.POSTS,
       icon: BookOpen,
-      items: [],
+      isActive: true,
+      items: [
+        {
+          title: 'Tạo mới',
+          url: ADMIN_ROUTES.HOME,
+        },
+        {
+          title: 'Tin tức',
+          url: ADMIN_ROUTES.NEWS,
+        },
+        {
+          title: 'Sự kiện',
+          url: ADMIN_ROUTES.EVENTS,
+        },
+        {
+          title: 'Thông báo',
+          url: ADMIN_ROUTES.NOTIFICATIONS,
+        },
+      ],
     },
-  ],
-  projects: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      title: 'Văn bản',
+      url: ADMIN_ROUTES.DOCUMENTS,
+      icon: FileText,
     },
   ],
 };

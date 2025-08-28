@@ -5,6 +5,11 @@ export const ADMIN_ROUTES = {
   BILLING: '/admin/billing',
   LIMITS: '/admin/limits',
   POSTS_CREATE: '/admin/posts/create',
+  DOCUMENTS: '/admin/documents',
+  EVENTS: '/admin/events',
+  NOTIFICATIONS: '/admin/notifications',
+  NEWS: '/admin/news',
+  NEWS_CREATE: '/admin/news/create',
 };
 
 export const PUBLIC_ROUTES = {

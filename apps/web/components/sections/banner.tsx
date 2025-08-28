@@ -7,7 +7,7 @@ export default function Banner() {
   return (
     <section className='relative w-full h-[800px]'>
       <Image
-        src='/images/banner-1.png'
+        src='/images/heri2.jpg'
         alt='Banner'
         fill
         className='object-cover'

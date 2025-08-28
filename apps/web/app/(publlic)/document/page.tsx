@@ -1,49 +1,66 @@
-import { Input } from '@edu/ui/components/input';
+import DocsTable from '@/components/tables/docs-table';
+import { BASE_URL } from '@/constants';
 
-import { Button } from '@edu/ui/components/button';
+export const dynamic = 'force-static'; // ép build static
+export const revalidate = 86400; // ISR: 24h. Đặt false nếu muốn SSG thuần
 
-const documents = [
-  {
-    number: '01/QĐ-THCS',
-    issuedDate: '10/09/2024',
-    effectiveDate: '10/09/2024',
-    description:
-      'Quy định về nội quy học sinh Trường THCS Đồng Than năm học 2024–2025',
-    type: 'Quyết định',
-    agency: 'Ban giám hiệu',
-    link: '#',
-  },
-  {
-    number: '02/QĐ-THCS',
-    issuedDate: '15/09/2024',
-    effectiveDate: '15/09/2024',
-    description:
-      'Quy chế tổ chức các hoạt động ngoại khoá và câu lạc bộ học sinh',
-    type: 'Quyết định',
-    agency: 'Ban giám hiệu',
-    link: '#',
-  },
-  {
-    number: '03/QĐ-THCS',
-    issuedDate: '20/09/2024',
-    effectiveDate: '20/09/2024',
-    description: 'Quy định khen thưởng và xử lý vi phạm đối với học sinh',
-    type: 'Quyết định',
-    agency: 'Ban giám hiệu',
-    link: '#',
-  },
-  {
-    number: '04/QĐ-THCS',
-    issuedDate: '25/09/2024',
-    effectiveDate: '25/09/2024',
-    description:
-      'Hướng dẫn thực hiện quy chế đánh giá kết quả học tập và rèn luyện của học sinh',
-    type: 'Hướng dẫn',
-    agency: 'Tổ chuyên môn',
-    link: '#',
-  },
-];
-export default function RegulationDocumentsPage() {
+type Rule = {
+  _id: string;
+  number: string;
+  issuedDate: string;
+  effectiveDate: string;
+  summary: string;
+  type: string;
+  agency: string;
+};
+
+type Attachment = {
+  _id: string;
+  originalName: string;
+  size: number;
+  mime: string;
+  createdAt: string;
+};
+
+async function getRules(): Promise<Rule[]> {
+  const res = await fetch(`${BASE_URL}/api/rules`, {
+    next: { revalidate },
+  });
+  if (!res.ok) throw new Error('Không lấy được danh sách văn bản');
+  const data = await res.json();
+  return (data?.rules ?? []) as Rule[];
+}
+
+async function getAttachments(ruleId: string): Promise<Attachment[]> {
+  const res = await fetch(`${BASE_URL}/api/attachments/rule/${ruleId}`, {
+    next: { revalidate },
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data?.files ?? []) as Attachment[];
+}
+
+function fmtVN(d: string) {
+  try {
+    return new Date(d).toLocaleDateString('vi-VN');
+  } catch {
+    return d;
+  }
+}
+
+export default async function RegulationDocumentsPage() {
+  const rules = await getRules();
+
+  // Pre-fetch attachments tại build (hoặc lần revalidate)
+  const rulesWithFiles = await Promise.all(
+    rules.map(async r => ({
+      ...r,
+      issuedDate: fmtVN(r.issuedDate),
+      effectiveDate: fmtVN(r.effectiveDate),
+      attachments: await getAttachments(r._id),
+    }))
+  );
+
   return (
     <section className='py-16 px-6 max-w-7xl mx-auto'>
       <div className='text-center mb-10'>
@@ -52,54 +69,10 @@ export default function RegulationDocumentsPage() {
         </h1>
       </div>
 
-      <div className='flex flex-col sm:flex-row items-center justify-center gap-4 mb-8'>
-        <Input placeholder='Nhập từ khóa ...' className='w-64 bg-white' />
-        <Button className='bg-primary hover:bg-primary/80 text-white'>
-          Tìm kiếm
-        </Button>
-      </div>
-
-      <div className='overflow-x-auto'>
-        <table className='w-full text-sm border-collapse bg-white'>
-          <thead>
-            <tr className='bg-gray-100 text-secondary-foreground font-semibold'>
-              <th className='px-4 py-2 border'>STT</th>
-              <th className='px-4 py-2 border'>Số văn bản</th>
-              <th className='px-4 py-2 border'>Ngày ban hành</th>
-              <th className='px-4 py-2 border'>Thời gian bắt đầu hiệu lực</th>
-              <th className='px-4 py-2 border text-left'>Trích yếu nội dung</th>
-              <th className='px-4 py-2 border'>Loại văn bản</th>
-              <th className='px-4 py-2 border'>Cơ quan ban hành</th>
-              <th className='px-4 py-2 border'>Đính kèm</th>
-            </tr>
-          </thead>
-          <tbody>
-            {documents.map((doc, index) => (
-              <tr key={index} className='hover:bg-gray-50'>
-                <td className='px-4 py-2 border text-center'>{index + 1}</td>
-                <td className='px-4 py-2 border text-center'>{doc.number}</td>
-                <td className='px-4 py-2 border text-center'>
-                  {doc.issuedDate}
-                </td>
-                <td className='px-4 py-2 border text-center'>
-                  {doc.effectiveDate}
-                </td>
-                <td className='px-4 py-2 border'>{doc.description}</td>
-                <td className='px-4 py-2 border text-center'>{doc.type}</td>
-                <td className='px-4 py-2 border text-center'>{doc.agency}</td>
-                <td className='px-4 py-2 border text-center'>
-                  <a
-                    href={doc.link}
-                    className='text-secondary-foreground hover:underline'
-                  >
-                    {doc.number}
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DocsTable
+        data={rulesWithFiles}
+        downloadBase={`${BASE_URL}/api/attachments`}
+      />
     </section>
   );
 }
