@@ -29,7 +29,9 @@
     "prosemirror-state": "^1.4.3",
     "prosemirror-view": "^1.40.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "resend": "6.2.0-preview-contacts.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@edu/eslint-config": "workspace:^",

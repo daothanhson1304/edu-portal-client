@@ -80,6 +80,12 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
+      resend:
+        specifier: 6.2.0-preview-contacts.0
+        version: 6.2.0-preview-contacts.0
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
     devDependencies:
       '@edu/eslint-config':
         specifier: workspace:^
@@ -2781,6 +2787,15 @@ packages:
   registry-url@3.1.0:
     resolution: {integrity: sha512-ZbgR5aZEdf4UKZVBPYIgaglBmSF2Hi94s2PcIHhRGFjKYu+chjJdYfHn4rt3hB6eCKLJ8giVIIfgMa1ehDfZKA==}
     engines: {node: '>=0.10.0'}
+
+  resend@6.2.0-preview-contacts.0:
+    resolution: {integrity: sha512-pbXz5Ia+7wF08lJsr6FiwLW5Sgoup2lm9jY4czBDvv8uUhRePR0ZGWKErkoaYazm8WkVibMZwuqCtugZQ+G+dA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@react-email/render': ^1.1.0
+    peerDependenciesMeta:
+      '@react-email/render':
+        optional: true
 
   resolve-from@4.0.0:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
@@ -6075,6 +6090,8 @@ snapshots:
   registry-url@3.1.0:
     dependencies:
       rc: 1.2.8
+
+  resend@6.2.0-preview-contacts.0: {}
 
   resolve-from@4.0.0: {}
 

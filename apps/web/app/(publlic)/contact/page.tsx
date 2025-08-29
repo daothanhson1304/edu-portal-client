@@ -1,8 +1,42 @@
+'use client';
+
+import { useState } from 'react';
 import { Input } from '@edu/ui/components/input';
 import { Textarea } from '@edu/ui/components/textarea';
 import { Button } from '@edu/ui/components/button';
 
 export default function ContactPage() {
+  const [loading, setLoading] = useState(false);
+  const [ok, setOk] = useState<null | boolean>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setOk(null);
+    setError(null);
+
+    const fd = new FormData(e.currentTarget);
+    const payload = Object.fromEntries(fd.entries());
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || 'Gửi thất bại');
+      setOk(true);
+      (e.currentTarget as HTMLFormElement).reset();
+    } catch (err: any) {
+      setOk(false);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <section className='py-16 px-6 max-w-3xl mx-auto'>
       <div className='text-center mb-10'>
@@ -15,7 +49,7 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <form className='space-y-6'>
+      <form className='space-y-6' onSubmit={onSubmit}>
         <div>
           <label htmlFor='name' className='block mb-1 font-medium'>
             Họ và tên
@@ -49,6 +83,7 @@ export default function ContactPage() {
             id='subject'
             name='subject'
             placeholder='Nhập tiêu đề liên hệ'
+            required
           />
         </div>
 
@@ -65,20 +100,30 @@ export default function ContactPage() {
           />
         </div>
 
-        <div className='text-center'>
+        <input
+          type='text'
+          name='website'
+          className='hidden'
+          tabIndex={-1}
+          autoComplete='off'
+        />
+
+        <div className='text-center space-y-2'>
           <Button
             type='submit'
             className='px-8 bg-red-700 hover:bg-red-800 text-white'
+            disabled={loading}
           >
-            Gửi liên hệ
+            {loading ? 'Đang gửi…' : 'Gửi liên hệ'}
           </Button>
+          {ok && (
+            <p className='text-green-600 text-sm'>
+              Đã gửi thành công! Cảm ơn bạn.
+            </p>
+          )}
+          {ok === false && <p className='text-red-600 text-sm'>Lỗi: {error}</p>}
         </div>
       </form>
     </section>
   );
 }
-
-export const metadata = {
-  title: 'Liên hệ với chúng tôi',
-  description: 'Liên hệ với chúng tôi',
-};
