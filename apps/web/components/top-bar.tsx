@@ -14,7 +14,7 @@ export default function TopBar() {
           </span>
         </div>
 
-        <div className='flex items-center gap-4 text-xs'>
+        <div className='hidden md:flex items-center gap-4 text-xs'>
           <div className='flex items-center gap-1'>
             <Phone className='w-4 h-4' />
             <span>0221 3 993 999</span>

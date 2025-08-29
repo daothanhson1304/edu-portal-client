@@ -1,9 +1,6 @@
-import { Card, CardContent } from '@edu/ui/components/card';
-import { Button } from '@edu/ui/components/button';
-import Link from 'next/link';
 import Image from 'next/image';
-import ExampleImage from '@/public/images/example.jpg';
-import { Input } from '@edu/ui/components/input';
+import Link from 'next/link';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,36 +9,71 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@edu/ui/components/breadcrumb';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@edu/ui/components/select';
+import { Card, CardContent } from '@edu/ui/components/card';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/constants';
+import { Controls } from '@/components/pagination';
+import Pagination from '@/components/pagination/pagination';
 
-const mockNews = Array.from({ length: 8 }, (_, i) => ({
-  id: i + 1,
-  title: [
-    'Sinh viên PTIT giành huy chương Vàng tin học văn phòng thế giới 2025',
-    'PTIT trao bằng Thạc sĩ chương trình VMCS',
-    'Sinh viên xuất sắc tại Coding Fest 2025',
-    'PTIT tổ chức hoạt động tri ân kỷ niệm 78 năm ngày Thương binh – Liệt sĩ',
-    'Thông báo quy đổi điểm tuyển sinh đại học chính quy 2025',
-    'PTIT và TMN hợp tác về AI, STEM và công nghệ xanh',
-    'Tư vấn tuyển sinh đại học chính quy năm 2025',
-    'Khai giảng chương trình “Lãnh đạo trẻ trong kỷ nguyên số”',
-  ][i],
-  date: `2025-07-${31 - i}`.padStart(10, '0'),
-  imageUrl: `/images/news-${i + 1}.jpg`,
-  slug: `news-${i + 1}`,
-}));
+export const metadata: Metadata = {
+  title: 'Thông báo | Trường THCS Đồng Than',
+  description: 'Thông báo',
+};
 
-export default function NewsPage() {
+export const revalidate = 300;
+
+type SearchParams = {
+  page?: string;
+  limit?: string;
+  search?: string;
+  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'views';
+  sortOrder?: 'asc' | 'desc';
+  type?: string;
+};
+
+async function getPosts(sp: SearchParams) {
+  const params = new URLSearchParams({
+    page: sp.page ?? '1',
+    limit: sp.limit ?? '8',
+    search: sp.search ?? '',
+    sortBy: sp.sortBy ?? 'createdAt',
+    sortOrder: sp.sortOrder ?? 'desc',
+    type: sp.type ?? 'notification',
+  });
+
+  const url = `${BASE_URL}/api/posts?${params.toString()}`;
+  const res = await fetch(url, { next: { revalidate } });
+  if (!res.ok) return { data: [], pagination: null };
+  const json = await res.json();
+  return json as {
+    data: {
+      id: string;
+      title: string;
+      createdAt: string;
+      thumbnailUrl?: string;
+      slug?: string;
+    }[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+      nextPage: number | null;
+      prevPage: number | null;
+    };
+  };
+}
+
+export default async function NewsPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { data, pagination } = await getPosts(searchParams);
+
   return (
     <div className='max-w-7xl mx-auto px-4 py-10'>
-      <div className='relative h-64 w-full'>
+      <div className='relative h-32 w-full'>
         <div className='absolute inset-0 flex flex-col justify-center items-center text-white text-center'>
           {/* Breadcrumb - dùng shadcn UI */}
           <section className='py-10 px-4 text-center'>
@@ -59,7 +91,7 @@ export default function NewsPage() {
                 <BreadcrumbSeparator className='mx-2 text-primary' />
                 <BreadcrumbItem>
                   <BreadcrumbPage className='text-primary font-bold text-xl'>
-                    Thông báo
+                    Tin tức chung
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -67,48 +99,36 @@ export default function NewsPage() {
           </section>
         </div>
       </div>
-      <div className='flex flex-col md:flex-row md:items-center md:justify-center gap-4 mb-8'>
-        <Input
-          type='text'
-          placeholder='Nhập thông tin tìm kiếm'
-          className='md:max-w-sm'
-        />
-        <Select>
-          <SelectTrigger className='w-full md:w-52'>
-            <SelectValue placeholder='Sắp xếp theo...' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='latest'>Mới nhất</SelectItem>
-            <SelectItem value='oldest'>Cũ nhất</SelectItem>
-            <SelectItem value='title'>Tiêu đề (A-Z)</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button className='bg-primary text-white w-full md:w-auto'>
-          Tìm kiếm
-        </Button>
-      </div>
+
+      <Controls
+        defaultSearch={searchParams.search ?? ''}
+        defaultSort={`${searchParams.sortBy ?? 'createdAt'}:${searchParams.sortOrder ?? 'desc'}`}
+      />
+
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-        {mockNews.map(item => (
+        {data.map(item => (
           <Card
             key={item.id}
-            className='hover:shadow-lg transition-all duration-300 py-0 overflow-hidden'
+            className='hover:shadow-lg transition-all duration-300 py-0 overflow-hidden gap-0'
           >
-            <Image
-              src={ExampleImage}
-              alt={item.title ?? ''}
-              width={400}
-              height={250}
-              className='w-full h-48 object-cover rounded-t-md hover:scale-105 transition-all duration-300'
-            />
+            <div className='relative w-full h-48'>
+              <Image
+                src={item.thumbnailUrl || '/images/og-default.jpg'}
+                alt={item.title}
+                fill
+                className='object-cover'
+              />
+            </div>
             <CardContent className='py-4'>
               <p className='text-sm text-muted-foreground mb-2'>
-                📰 Tin Tức · {item.date}
+                📰 Tin tức ·{' '}
+                {new Date(item.createdAt).toLocaleDateString('vi-VN')}
               </p>
               <h3 className='font-semibold text-base text-blue-900 mb-2 line-clamp-3'>
                 {item.title}
               </h3>
               <Link
-                href={`/news/${item.slug}`}
+                href={`/news/${item.id}`}
                 className='text-primary text-sm hover:underline'
               >
                 Xem chi tiết →
@@ -118,35 +138,12 @@ export default function NewsPage() {
         ))}
       </div>
 
-      {/* Pagination */}
-      <div className='flex justify-center gap-2 mt-10'>
-        <Button variant='outline' size='sm'>
-          {'<'}
-        </Button>
-        <Button variant='default' size='sm'>
-          1
-        </Button>
-        <Button variant='outline' size='sm'>
-          2
-        </Button>
-        <Button variant='outline' size='sm'>
-          3
-        </Button>
-        <Button variant='ghost' size='sm'>
-          ...
-        </Button>
-        <Button variant='outline' size='sm'>
-          128
-        </Button>
-        <Button variant='outline' size='sm'>
-          {'>'}
-        </Button>
-      </div>
+      {pagination && pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+        />
+      )}
     </div>
   );
 }
-
-export const metadata: Metadata = {
-  title: 'Thông báo | Trường THCS Đồng Than',
-  description: 'Thông báo',
-};

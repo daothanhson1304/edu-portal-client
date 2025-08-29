@@ -81,7 +81,7 @@ export default async function FeaturedNewsSection() {
                     <span>{formatDateTime(new Date(event.createdAt))}</span>
                   </div>
                   <Link
-                    href={`${PUBLIC_ROUTES.EVENTS}/${event.id}`}
+                    href={`${PUBLIC_ROUTES.NEWS}/${event.id}`}
                     className='font-semibold text-secondary-foreground text-base line-clamp-3 hover:underline'
                   >
                     {event.title}

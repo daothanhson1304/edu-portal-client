@@ -11,6 +11,7 @@ import { Button } from '@edu/ui/components/button';
 import { Trash2, Check, Upload, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@edu/ui/lib/utils';
+import { BASE_URL } from '@/constants';
 
 type Props = {
   open: boolean;
@@ -33,7 +34,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }: Props) {
 
     setUploading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/image', {
+      const res = await fetch(`${BASE_URL}/api/image`, {
         method: 'POST',
         body: formData,
       });
@@ -50,7 +51,7 @@ export default function ImageGalleryModal({ open, onClose, onSelect }: Props) {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/image');
+        const res = await fetch(`${BASE_URL}/api/image`);
         const data = await res.json();
         setImages(data.images);
       } catch (err) {

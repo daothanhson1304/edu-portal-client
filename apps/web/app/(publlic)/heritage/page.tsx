@@ -29,16 +29,16 @@ export default function SchoolHistoryPage() {
       <div className='max-w-7xl mx-auto'>
         <div className='overflow-hidden'>
           {/* Hero */}
-          <div className='relative h-64 md:h-80 w-full'>
+          <div className='relative aspect-[21/9] w-full'>
             <Image
-              src='/school-hero.jpg'
+              src='/images/abc.jpg'
               alt='school building'
-              fill
               className='object-cover'
               placeholder='blur'
+              fill
               blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJScgaGVpZ2h0PSc1MCUnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PC9zdmc+'
             />
-            <div className='absolute inset-0 bg-gradient-to-b from-transparent to-black/40' />
+            {/* <div className='absolute inset-0 bg-gradient-to-b from-transparent to-black/40' /> */}
             <div className='absolute left-6 bottom-6 text-white'>
               <h1 className='text-2xl md:text-3xl font-semibold drop-shadow'>
                 {content.title}

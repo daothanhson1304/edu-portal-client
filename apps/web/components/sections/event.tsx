@@ -13,7 +13,7 @@ const TAG = 'featured-events';
 
 async function getFeaturedEvents(): Promise<Post[]> {
   try {
-    const url = `${BASE_URL}/api/posts?type=news&limit=6`;
+    const url = `${BASE_URL}/api/posts?type=event&limit=6`;
 
     const res = await fetch(url, {
       next: { revalidate: 600, tags: [TAG] },
