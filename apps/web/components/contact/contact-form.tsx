@@ -46,6 +46,7 @@ export default function ContactForm() {
       if (!res.ok) throw new Error(json?.error || 'Gửi thất bại');
       setOk(true);
       (e.currentTarget as HTMLFormElement).reset();
+
       setCaptchaToken('');
     } catch (err: any) {
       setOk(false);
@@ -118,7 +119,10 @@ export default function ContactForm() {
         src='https://challenges.cloudflare.com/turnstile/v0/api.js'
         async
         defer
-        onLoad={() => setCaptchaReady(true)}
+        onLoad={() => {
+          setCaptchaReady(true);
+          console.log('Captcha ready');
+        }}
       />
       <div
         className='cf-turnstile'
@@ -131,7 +135,7 @@ export default function ContactForm() {
       <div className='text-center space-y-2'>
         <Button
           type='submit'
-          className='px-8 bg-red-700 hover:bg-red-800 text-white'
+          className='px-8 bg-primary hover:bg-primary/80 text-white'
           disabled={loading || !captchaReady || !captchaToken}
         >
           {loading ? 'Đang gửi…' : 'Gửi liên hệ'}
@@ -141,7 +145,9 @@ export default function ContactForm() {
             Đã gửi thành công! Cảm ơn bạn.
           </p>
         )}
-        {ok === false && <p className='text-red-600 text-sm'>Lỗi: {error}</p>}
+        {ok === false && (
+          <p className='text-destructive text-sm'>Lỗi: {error}</p>
+        )}
       </div>
     </form>
   );
