@@ -43,6 +43,7 @@ export function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
       const json = await res.json().catch(() => ({}));
+      console.log('json', json);
       if (!res.ok) throw new Error(json?.error || 'Đăng nhập thất bại');
 
       window.location.href = next;

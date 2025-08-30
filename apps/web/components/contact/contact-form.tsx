@@ -6,17 +6,58 @@ import { Input } from '@edu/ui/components/input';
 import { Textarea } from '@edu/ui/components/textarea';
 import { Button } from '@edu/ui/components/button';
 
+declare global {
+  interface Window {
+    turnstile?: any;
+  }
+}
+
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<null | boolean>(null);
   const [error, setError] = useState<string | null>(null);
+
   const [captchaReady, setCaptchaReady] = useState(false);
   const [captchaToken, setCaptchaToken] = useState('');
+  const [widgetId, setWidgetId] = useState<string | null>(null);
+
   const startedAtRef = useRef<string>('');
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
   useEffect(() => {
     startedAtRef.current = Date.now().toString();
   }, []);
+
+  // Khi script sẵn sàng -> render widget
+  useEffect(() => {
+    if (!captchaReady || !siteKey) return;
+    if (!window.turnstile) return;
+    if (!widgetId) {
+      console.log('Rendering widget');
+      const id = window.turnstile.render('#turnstile-container', {
+        sitekey: siteKey,
+        callback: (token: string) => {
+          console.log('Captcha token', token);
+          setCaptchaToken(token);
+        },
+        'expired-callback': () => setCaptchaToken(''),
+        'error-callback': () => setCaptchaToken(''),
+        // appearance: 'always', // hoặc 'interaction-only' tuỳ bạn
+      });
+      setWidgetId(id);
+    }
+  }, [captchaReady, siteKey, widgetId]);
+
+  // Dọn dẹp widget khi unmount (optional)
+  useEffect(() => {
+    return () => {
+      try {
+        if (widgetId && window.turnstile?.remove) {
+          window.turnstile.remove(widgetId);
+        }
+      } catch {}
+    };
+  }, [widgetId]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,6 +65,7 @@ export default function ContactForm() {
     setOk(null);
     setError(null);
 
+    // Không cho submit nếu chưa có token
     if (!captchaToken) {
       setLoading(false);
       setOk(false);
@@ -42,15 +84,20 @@ export default function ContactForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || 'Gửi thất bại');
+
       setOk(true);
       (e.currentTarget as HTMLFormElement).reset();
 
+      // Reset token & widget để lấy token mới cho lần sau
       setCaptchaToken('');
+      if (widgetId && window.turnstile?.reset) {
+        window.turnstile.reset(widgetId);
+      }
     } catch (err: any) {
       setOk(false);
-      setError(err.message);
+      setError(err.message || 'Gửi thất bại');
     } finally {
       setLoading(false);
     }
@@ -106,6 +153,7 @@ export default function ContactForm() {
         />
       </div>
 
+      {/* Honeypot + time-trap */}
       <input
         type='text'
         name='website'
@@ -115,31 +163,28 @@ export default function ContactForm() {
       />
       <input type='hidden' name='startedAt' value={startedAtRef.current} />
 
+      {/* Turnstile script */}
       <Script
         src='https://challenges.cloudflare.com/turnstile/v0/api.js'
         async
         defer
-        onLoad={() => {
-          setCaptchaReady(true);
-          console.log('Captcha ready');
-        }}
+        onLoad={() => setCaptchaReady(true)}
       />
-      <div
-        className='cf-turnstile'
-        data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
-        data-callback={(token: string) => setCaptchaToken(token)}
-        data-expired-callback={() => setCaptchaToken('')}
-        data-error-callback={() => setCaptchaToken('')}
-      />
+
+      {/* Container để render widget bằng JS */}
+      <div id='turnstile-container' />
 
       <div className='text-center space-y-2'>
         <Button
           type='submit'
           className='px-8 bg-primary hover:bg-primary/80 text-white'
+          // 🔒 Disable nếu: đang gửi, script chưa sẵn sàng, hoặc CHƯA có token hợp lệ
           disabled={loading || !captchaReady || !captchaToken}
+          aria-disabled={loading || !captchaReady || !captchaToken}
         >
           {loading ? 'Đang gửi…' : 'Gửi liên hệ'}
         </Button>
+
         {ok && (
           <p className='text-green-600 text-sm'>
             Đã gửi thành công! Cảm ơn bạn.
@@ -149,6 +194,12 @@ export default function ContactForm() {
           <p className='text-destructive text-sm'>Lỗi: {error}</p>
         )}
       </div>
+
+      {!siteKey && (
+        <p className='text-sm text-destructive'>
+          Thiếu NEXT_PUBLIC_TURNSTILE_SITE_KEY — vui lòng cấu hình .env
+        </p>
+      )}
     </form>
   );
 }
