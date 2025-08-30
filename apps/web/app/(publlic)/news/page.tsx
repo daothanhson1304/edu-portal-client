@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: 'Tin tức',
 };
 
-export const revalidate = 300;
+export const revalidate = 0;
 
 async function getPosts(
   sp: Record<string, string | string[] | undefined> = {}
@@ -36,7 +36,10 @@ async function getPosts(
   });
 
   const url = `${BASE_URL}/api/posts?${params.toString()}`;
-  const res = await fetch(url, { next: { revalidate } });
+  const res = await fetch(url, {
+    cache: 'no-store', // Tắt cache hoàn toàn
+    next: { revalidate },
+  });
   if (!res.ok) return { data: [], pagination: null };
   const json = await res.json();
   return json as {

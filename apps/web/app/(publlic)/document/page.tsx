@@ -2,7 +2,7 @@ import DocsTable from '@/components/tables/docs-table';
 import { BASE_URL } from '@/constants';
 
 export const dynamic = 'force-static'; // ép build static
-export const revalidate = 300; // ISR: 24h. Đặt false nếu muốn SSG thuần
+export const revalidate = 0; // ISR: 24h. Đặt false nếu muốn SSG thuần
 
 type Rule = {
   _id: string;

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: 'Thông báo',
 };
 
-export const revalidate = 300;
+export const revalidate = 0;
 
 async function getPosts(sp: SearchParams) {
   const params = new URLSearchParams({
