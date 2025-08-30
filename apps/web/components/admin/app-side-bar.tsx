@@ -53,7 +53,7 @@ const data = {
         },
         {
           title: 'Thông báo',
-          url: ADMIN_ROUTES.NOTIFICATIONS,
+          url: ADMIN_ROUTES.NOTICES,
         },
       ],
     },

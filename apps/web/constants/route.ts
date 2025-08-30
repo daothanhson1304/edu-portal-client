@@ -7,7 +7,7 @@ export const ADMIN_ROUTES = {
   POSTS_CREATE: '/admin/posts/create',
   DOCUMENTS: '/admin/documents',
   EVENTS: '/admin/events',
-  NOTIFICATIONS: '/admin/notifications',
+  NOTICES: '/admin/notices',
   NEWS: '/admin/news',
   NEWS_CREATE: '/admin/news/create',
 };

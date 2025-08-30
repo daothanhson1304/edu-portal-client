@@ -6,7 +6,7 @@ import { formatDateTime } from '@/lib';
 import { htmlToPlain } from '@/lib/html';
 import { Calendar } from 'lucide-react';
 
-export const revalidate = 600;
+export const revalidate = 300;
 
 async function fetchPost(slug: string) {
   const res = await fetch(`${BASE_URL}/api/posts/${slug}`, {

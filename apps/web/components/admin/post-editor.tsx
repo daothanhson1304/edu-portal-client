@@ -16,12 +16,12 @@ import {
 } from '@edu/ui/components/select';
 import { toast } from '@edu/ui/components/sonner';
 import TiptapEditor from '@/components/editor/tiptap-editor';
+import { BASE_URL } from '@/constants';
 
 export type PostStatus = 'draft' | 'published';
 export type PostType = 'news' | 'event' | 'notice' | 'other';
 
 type PostEditorProps = {
-  apiBase: string; // BASE_URL
   mode: 'create' | 'edit';
   initial?: {
     _id: string;
@@ -33,14 +33,9 @@ type PostEditorProps = {
   } | null;
 };
 
-export default function PostEditor({
-  apiBase,
-  mode,
-  initial,
-}: PostEditorProps) {
+export default function PostEditor({ mode, initial }: PostEditorProps) {
   const router = useRouter();
 
-  // --- state
   const [title, setTitle] = useState('');
   const [type, setType] = useState<PostType | ''>('');
   const [content, setContent] = useState('');
@@ -49,7 +44,6 @@ export default function PostEditor({
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // --- hydrate from initial (edit mode)
   useEffect(() => {
     if (mode === 'edit' && initial) {
       setTitle(initial.title ?? '');
@@ -71,7 +65,6 @@ export default function PostEditor({
   const handleImageRemove = () => {
     setImage(null);
     setPreviewUrl(null);
-    // nếu đang edit và có ảnh cũ -> đánh dấu xóa ảnh
     if (mode === 'edit' && initial?.thumbnailUrl) setRemoveExistingImage(true);
   };
 
@@ -91,14 +84,13 @@ export default function PostEditor({
 
     setSubmitting(true);
     try {
-      // 1) upload ảnh mới (nếu có)
       let thumbnailUrlToSend: string | null | undefined =
         mode === 'edit' ? (initial?.thumbnailUrl ?? null) : null;
 
       if (image) {
         const fd = new FormData();
         fd.append('file', image);
-        const resUpload = await fetch(`${apiBase}/api/image`, {
+        const resUpload = await fetch(`${BASE_URL}/api/image`, {
           method: 'POST',
           body: fd,
         });
@@ -109,11 +101,9 @@ export default function PostEditor({
         const dataUpload = await resUpload.json();
         thumbnailUrlToSend = dataUpload.url ?? null;
       } else if (mode === 'edit' && removeExistingImage) {
-        // người dùng bấm xoá ảnh cũ
         thumbnailUrlToSend = null;
       }
 
-      // 2) gọi API create / update
       const payload = {
         title,
         content,
@@ -124,8 +114,8 @@ export default function PostEditor({
 
       const url =
         mode === 'create'
-          ? `${apiBase}/api/posts`
-          : `${apiBase}/api/posts/${initial!._id}`;
+          ? `${BASE_URL}/api/posts`
+          : `${BASE_URL}/api/posts/${initial!._id}`;
       const method = mode === 'create' ? 'POST' : 'PATCH';
 
       const res = await fetch(url, {
@@ -143,9 +133,6 @@ export default function PostEditor({
 
       if (mode === 'create') {
         resetForm();
-        // điều hướng sang trang edit của post vừa tạo (tùy thích)
-        if (data?.id || data?._id)
-          router.push(`/admin/posts/${data.id || data._id}`);
       } else {
         router.refresh();
       }

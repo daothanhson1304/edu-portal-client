@@ -22,7 +22,6 @@ export default async function EditPostPage({
 
   return (
     <PostEditor
-      apiBase={BASE_URL}
       mode='edit'
       initial={{
         _id: post._id,

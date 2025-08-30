@@ -52,7 +52,7 @@ export default async function AdminNewsPage() {
         apiBase: BASE_URL,
         resource,
         heading: 'Tin tức',
-        createHref: ADMIN_ROUTES.NEWS_CREATE,
+        createHref: ADMIN_ROUTES.HOME,
         publishable: true,
         editHref: `${ADMIN_ROUTES.NEWS}/[id]/edit`,
         showCounters: ['views', 'likes'],

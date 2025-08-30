@@ -42,7 +42,7 @@ function normalize(raw: Raw, resource: string): AdminItem {
 }
 
 export default async function AdminNewsPage() {
-  const resource = 'news';
+  const resource = 'notice';
   const raws = await getItems(resource);
   const items: AdminItem[] = raws.map(r => normalize(r, resource));
   return (
@@ -51,10 +51,10 @@ export default async function AdminNewsPage() {
       config={{
         apiBase: BASE_URL,
         resource,
-        heading: 'Tin tức',
-        createHref: ADMIN_ROUTES.NEWS_CREATE,
+        heading: 'Thông báo',
+        createHref: ADMIN_ROUTES.HOME,
         publishable: true,
-        editHref: `${ADMIN_ROUTES.NEWS}/[id]/edit`,
+        editHref: `${ADMIN_ROUTES.NOTICES}/[id]/edit`,
         showCounters: ['views', 'likes'],
       }}
     />
