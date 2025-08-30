@@ -79,7 +79,7 @@ export default function ContactForm() {
     const payload = Object.fromEntries(fd.entries());
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/nextapi/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
