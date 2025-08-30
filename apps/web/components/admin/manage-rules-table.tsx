@@ -16,10 +16,6 @@ export default function ManageRulesTable({
   const router = useRouter();
 
   async function handleDelete(id: string) {
-    if (
-      !confirm('Bạn chắc chắn xoá văn bản này? Hành động không thể hoàn tác.')
-    )
-      return;
     const res = await fetch(`${apiBase}/api/rules/${id}`, { method: 'DELETE' });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) toast.error(data?.error || 'Xoá thất bại');

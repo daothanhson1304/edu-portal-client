@@ -27,8 +27,8 @@ import { NavLogo } from './nav-logo';
 // This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: 'Admin',
+    email: 'admin@thcsdongthanhoanlong.edu.vn',
     avatar: '/avatars/shadcn.jpg',
   },
 

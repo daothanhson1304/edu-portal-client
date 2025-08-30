@@ -19,6 +19,7 @@ import {
   AlertDialogDescription,
   AlertDialogCancel,
   AlertDialogAction,
+  AlertDialogTrigger,
 } from '@edu/ui/components/alert-dialog';
 import {
   Tooltip,
@@ -37,10 +38,10 @@ export function ActionsCell({
   onConfirmDelete: () => Promise<void> | void;
   disabled?: boolean;
 }) {
-  const [openConfirm, setOpenConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   return (
-    <>
+    <AlertDialog>
       <DropdownMenu>
         <TooltipProvider delayDuration={200}>
           <Tooltip>
@@ -65,40 +66,44 @@ export function ActionsCell({
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onClick={() => setOpenConfirm(true)}
-            className='text-red-600 focus:text-red-600'
-          >
-            <Trash2 className='h-4 w-4 mr-2' /> Xoá
+          {/* Dùng AlertDialogTrigger để mở modal */}
+          <DropdownMenuItem asChild>
+            <AlertDialogTrigger asChild>
+              <button className='flex w-full items-center gap-2 text-red-600'>
+                <Trash2 className='h-4 w-4' /> Xoá
+              </button>
+            </AlertDialogTrigger>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Confirm delete */}
-      <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xoá văn bản?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hành động này không thể hoàn tác. Tất cả tệp đính kèm liên quan sẽ
-              bị xoá khỏi hệ thống.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Huỷ</AlertDialogCancel>
-            <AlertDialogAction
-              className='bg-red-600 hover:bg-red-700'
-              onClick={async () => {
+      {/* Modal xác nhận */}
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Xoá văn bản?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Hành động này không thể hoàn tác. Tất cả tệp đính kèm liên quan sẽ
+            bị xoá khỏi hệ thống.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={deleting}>Huỷ</AlertDialogCancel>
+          <AlertDialogAction
+            className='bg-red-600 hover:bg-red-700'
+            onClick={async () => {
+              try {
+                setDeleting(true);
                 await onConfirmDelete();
-                setOpenConfirm(false);
-              }}
-              disabled={disabled}
-            >
-              Xoá
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+              } finally {
+                setDeleting(false);
+              }
+            }}
+            disabled={disabled || deleting}
+          >
+            {deleting ? 'Đang xoá…' : 'Xoá'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

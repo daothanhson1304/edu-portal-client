@@ -1,7 +1,7 @@
 // components/admin/content-list.tsx
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -30,6 +30,7 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
+  AlertDialogTrigger,
 } from '@edu/ui/components/alert-dialog';
 import { Input } from '@edu/ui/components/input';
 import { Badge } from '@edu/ui/components/badge';
@@ -42,22 +43,21 @@ export type AdminItem = {
   title: string;
   thumbnailUrl?: string;
   updatedAt: string;
-  status?: 'draft' | 'published'; // nếu không có thì coi như luôn "published"
+  status?: 'draft' | 'published';
   views?: number;
   likes?: number;
   tags?: string[];
-  // meta phụ tùy loại nội dung (ví dụ ngày sự kiện)
   metaText?: string;
 };
 
 export type ContentListConfig = {
-  apiBase: string; // BASE_URL API
-  resource: string; // "posts" | "news" | "events" | "notices" | ...
-  heading: string; // tiêu đề trang
-  createHref: string; // link tạo mới
-  editHref: string; // link pattern để sửa (ví dụ: "/admin/news/[id]")
-  publishable?: boolean; // có trạng thái publish/draft không?
-  showCounters?: Array<'views' | 'likes'>; // hiển thị counters nào
+  apiBase: string;
+  resource: string;
+  heading: string;
+  createHref: string;
+  editHref: string;
+  publishable?: boolean;
+  showCounters?: Array<'views' | 'likes'>;
 };
 
 export default function ContentList({
@@ -83,7 +83,7 @@ export default function ContentList({
     publishable ? 'published' : 'all'
   );
   const [confirmId, setConfirmId] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const [deleting, setDeleting] = useState(false);
 
   const counts = useMemo(
     () => ({
@@ -115,7 +115,7 @@ export default function ContentList({
     if (!publishable) return;
     const next = current === 'published' ? 'draft' : 'published';
 
-    const updateStatus = async () => {
+    try {
       const res = await fetch(`${apiBase}/api/${resource}/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -127,21 +127,26 @@ export default function ContentList({
         prev.map(p => (p.id === id ? { ...p, status: next } : p))
       );
       toast.success(next === 'published' ? 'Đã publish' : 'Đã chuyển về draft');
-    };
-
-    startTransition(() => {
-      updateStatus();
-    });
+    } catch (e: any) {
+      toast.error(e?.message || 'Không đổi trạng thái được');
+    }
   }
 
   async function deleteItem(id: string) {
-    const res = await fetch(`${apiBase}/api/${resource}/${id}`, {
-      method: 'DELETE',
-    });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) return toast.error(j?.error || 'Xoá thất bại');
-    setItems(prev => prev.filter(p => p.id !== id));
-    toast.success('Đã xoá');
+    try {
+      setDeleting(true);
+      const res = await fetch(`${apiBase}/api/posts/${id}`, {
+        method: 'DELETE',
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) return toast.error(j?.error || 'Xoá thất bại');
+      setItems(prev => prev.filter(p => p.id !== id));
+      toast.success('Đã xoá');
+    } catch (e: any) {
+      toast.error(e?.message || 'Xoá thất bại');
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -188,8 +193,8 @@ export default function ContentList({
             Không có mục nào.
           </div>
         ) : (
-          filtered.map((it, index) => (
-            <Card key={index} className='p-4'>
+          filtered.map(it => (
+            <Card key={it.id} className='p-4'>
               <div className='flex gap-4 items-start'>
                 <Link
                   href={editHref.replace('[id]', it.id)}
@@ -222,7 +227,7 @@ export default function ContentList({
                         <div className='mt-2 flex flex-wrap gap-2'>
                           {it.tags.map((t, i) => (
                             <span
-                              key={i}
+                              key={`${it.id}-tag-${i}`}
                               className='bg-blue-100 text-blue-600 text-xs font-medium px-2 py-1 rounded-md'
                             >
                               {t}
@@ -243,49 +248,96 @@ export default function ContentList({
                         </Badge>
                       ) : null}
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className='rounded-md p-2 hover:bg-muted'>
-                          <MoreVertical className='h-5 w-5' />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end' className='w-44'>
-                          <DropdownMenuItem asChild>
-                            <Link
-                              href={editHref.replace('[id]', it.id)}
-                              className='flex items-center gap-2'
+                      <AlertDialog>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              className='h-8 w-8 rounded-md'
                             >
-                              <Pencil className='h-4 w-4' /> Sửa
-                            </Link>
-                          </DropdownMenuItem>
-                          {publishable && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => toggleStatus(it.id, it.status)}
+                              <MoreVertical className='h-5 w-5' />
+                            </Button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent align='end' className='w-44'>
+                            <DropdownMenuItem asChild>
+                              <Link
+                                href={editHref.replace('[id]', it.id)}
                                 className='flex items-center gap-2'
                               >
-                                {it.status === 'published' ? (
-                                  <>
-                                    <CircleSlash2 className='h-4 w-4' /> Hủy
-                                    xuất bản
-                                  </>
-                                ) : (
-                                  <>
-                                    <CheckCircle2 className='h-4 w-4' /> Xuất
-                                    bản
-                                  </>
-                                )}
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => setConfirmId(it.id)}
-                            className='text-red-600 focus:text-red-600 flex items-center gap-2'
-                          >
-                            <Trash2 className='h-4 w-4' /> Xoá
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                                <Pencil className='h-4 w-4' /> Sửa
+                              </Link>
+                            </DropdownMenuItem>
+
+                            {publishable && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    toggleStatus(it.id, it.status)
+                                  } // dùng onSelect để menu tự đóng
+                                  className='flex items-center gap-2'
+                                >
+                                  {it.status === 'published' ? (
+                                    <>
+                                      <CircleSlash2 className='h-4 w-4' /> Hủy
+                                      xuất bản
+                                    </>
+                                  ) : (
+                                    <>
+                                      <CheckCircle2 className='h-4 w-4' /> Xuất
+                                      bản
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                              </>
+                            )}
+
+                            <DropdownMenuSeparator />
+
+                            {/* Mở modal bằng AlertDialogTrigger; menu sẽ tự đóng */}
+                            <DropdownMenuItem
+                              asChild
+                              onSelect={() => setConfirmId(it.id)} // set id trước khi mở dialog
+                              className='text-red-600 focus:text-red-600'
+                            >
+                              <AlertDialogTrigger asChild>
+                                <button className='flex w-full items-center gap-2'>
+                                  <Trash2 className='h-4 w-4' /> Xoá
+                                </button>
+                              </AlertDialogTrigger>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Modal xác nhận */}
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Xoá mục này?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Hành động này không thể hoàn tác.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel disabled={deleting}>
+                              Huỷ
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className='bg-red-600 hover:bg-red-700'
+                              onClick={async () => {
+                                if (confirmId) {
+                                  await deleteItem(confirmId);
+                                  setConfirmId(null); // đóng dialog sau khi xoá
+                                }
+                              }}
+                              disabled={deleting}
+                            >
+                              {deleting ? 'Đang xoá…' : 'Xoá'}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
 
@@ -309,33 +361,6 @@ export default function ContentList({
           ))
         )}
       </div>
-
-      <AlertDialog
-        open={!!confirmId}
-        onOpenChange={o => !o && setConfirmId(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xoá mục này?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hành động này không thể hoàn tác.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Huỷ</AlertDialogCancel>
-            <AlertDialogAction
-              className='bg-red-600 hover:bg-red-700'
-              onClick={async () => {
-                if (confirmId) await deleteItem(confirmId);
-                setConfirmId(null);
-              }}
-              disabled={pending}
-            >
-              Xoá
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

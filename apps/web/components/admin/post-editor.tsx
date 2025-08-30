@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@edu/ui/components/button';
@@ -17,6 +17,7 @@ import {
 import { toast } from '@edu/ui/components/sonner';
 import TiptapEditor from '@/components/editor/tiptap-editor';
 import { BASE_URL } from '@/constants';
+import { TiptapEditorRef } from '@/components/editor/tiptap-editor';
 
 export type PostStatus = 'draft' | 'published';
 export type PostType = 'news' | 'event' | 'notice' | 'other';
@@ -35,6 +36,7 @@ type PostEditorProps = {
 
 export default function PostEditor({ mode, initial }: PostEditorProps) {
   const router = useRouter();
+  const editorRef = useRef<TiptapEditorRef>(null);
 
   const [title, setTitle] = useState('');
   const [type, setType] = useState<PostType | ''>('');
@@ -51,6 +53,8 @@ export default function PostEditor({ mode, initial }: PostEditorProps) {
       setContent(initial.content ?? '');
       setPreviewUrl(initial.thumbnailUrl || null);
       setRemoveExistingImage(false);
+      console.log('initial.content', initial.content);
+      editorRef.current?.setContent(initial.content ?? '');
     }
   }, [mode, initial]);
 
@@ -75,6 +79,7 @@ export default function PostEditor({ mode, initial }: PostEditorProps) {
     setImage(null);
     setPreviewUrl(null);
     setRemoveExistingImage(false);
+    editorRef.current?.resetContent();
   };
 
   async function handleSubmit(status: PostStatus) {
@@ -252,7 +257,11 @@ export default function PostEditor({ mode, initial }: PostEditorProps) {
         {/* Editor */}
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Nội dung</label>
-          <TiptapEditor content={content} onChange={setContent} />
+          <TiptapEditor
+            ref={editorRef}
+            content={content}
+            onChange={setContent}
+          />
         </div>
       </Card>
     </div>

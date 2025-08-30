@@ -19,7 +19,7 @@ export const PUBLIC_ROUTES = {
   CONTACT: '/contact',
   NEWS: '/news',
   EVENTS: '/events',
-  NOTIFICATIONS: '/notifications',
+  NOTIFICATIONS: '/notices',
   DOCUMENT: '/document',
   HERITAGE: '/heritage',
   TEAMS: '/teams',
