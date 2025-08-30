@@ -14,6 +14,7 @@ import { Metadata } from 'next';
 import { BASE_URL } from '@/constants';
 import { Controls } from '@/components/pagination';
 import Pagination from '@/components/pagination/pagination';
+import { PaginationInfo, PostSummary, SearchParams } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Thông báo | Trường THCS Đồng Than',
@@ -21,15 +22,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 300;
-
-type SearchParams = {
-  page?: string;
-  limit?: string;
-  search?: string;
-  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'views';
-  sortOrder?: 'asc' | 'desc';
-  type?: string;
-};
 
 async function getPosts(sp: SearchParams) {
   const params = new URLSearchParams({
@@ -46,36 +38,23 @@ async function getPosts(sp: SearchParams) {
   if (!res.ok) return { data: [], pagination: null };
   const json = await res.json();
   return json as {
-    data: {
-      id: string;
-      title: string;
-      createdAt: string;
-      thumbnailUrl?: string;
-      slug?: string;
-    }[];
-    pagination: {
-      currentPage: number;
-      totalPages: number;
-      hasNextPage: boolean;
-      hasPrevPage: boolean;
-      nextPage: number | null;
-      prevPage: number | null;
-    };
+    data: PostSummary[];
+    pagination: PaginationInfo | null;
   };
 }
 
 export default async function NewsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const { data, pagination } = await getPosts(searchParams);
+  const sp = (await searchParams) ?? {};
+  const { data, pagination } = await getPosts(sp);
 
   return (
     <div className='max-w-7xl mx-auto px-4 py-10'>
       <div className='relative h-32 w-full'>
         <div className='absolute inset-0 flex flex-col justify-center items-center text-white text-center'>
-          {/* Breadcrumb - dùng shadcn UI */}
           <section className='py-10 px-4 text-center'>
             <Breadcrumb>
               <BreadcrumbList className='justify-center flex flex-wrap'>
@@ -91,7 +70,7 @@ export default async function NewsPage({
                 <BreadcrumbSeparator className='mx-2 text-primary' />
                 <BreadcrumbItem>
                   <BreadcrumbPage className='text-primary font-bold text-xl'>
-                    Tin tức chung
+                    Thông báo
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -101,8 +80,8 @@ export default async function NewsPage({
       </div>
 
       <Controls
-        defaultSearch={searchParams.search ?? ''}
-        defaultSort={`${searchParams.sortBy ?? 'createdAt'}:${searchParams.sortOrder ?? 'desc'}`}
+        defaultSearch={sp.search ?? ''}
+        defaultSort={`${sp.sortBy ?? 'createdAt'}:${sp.sortOrder ?? 'desc'}`}
       />
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>

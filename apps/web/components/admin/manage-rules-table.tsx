@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@edu/ui/components/button';
 import { toast } from '@edu/ui/components/sonner';
 import { useRouter } from 'next/navigation';
 import { ActionsCell } from './actions-cell';

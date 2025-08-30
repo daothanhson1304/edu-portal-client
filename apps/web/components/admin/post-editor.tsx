@@ -52,7 +52,6 @@ export default function PostEditor({
   // --- hydrate from initial (edit mode)
   useEffect(() => {
     if (mode === 'edit' && initial) {
-      console.log(initial);
       setTitle(initial.title ?? '');
       setType((initial.type as PostType) ?? '');
       setContent(initial.content ?? '');

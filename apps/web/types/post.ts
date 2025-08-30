@@ -14,3 +14,10 @@ export type Post = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type PostSummary = {
+  id: string;
+  title: string;
+  createdAt: string;
+  thumbnailUrl?: string;
+};

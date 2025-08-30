@@ -45,7 +45,6 @@ export default async function AdminNewsPage() {
   const resource = 'news';
   const raws = await getItems(resource);
   const items: AdminItem[] = raws.map(r => normalize(r, resource));
-  console.log(items);
   return (
     <ContentList
       initialItems={items}

@@ -1,4 +1,3 @@
-// app/admin/posts/[id]/page.tsx
 import PostEditor from '@/components/admin/post-editor';
 import { BASE_URL } from '@/constants';
 

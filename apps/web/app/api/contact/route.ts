@@ -45,13 +45,11 @@ export async function POST(req: Request) {
     });
 
     if (error) {
-      console.log(error);
       return Response.json({ error: error.message }, { status: 500 });
     }
 
     return Response.json({ ok: true });
   } catch (err: any) {
-    console.log(err);
     return Response.json(
       { error: err?.message ?? 'Server error' },
       { status: 500 }

@@ -1,3 +1,6 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { jwtVerify } from 'jose';
 import {
   SidebarInset,
   SidebarProvider,
@@ -14,11 +17,19 @@ import {
   BreadcrumbSeparator,
 } from '@edu/ui/components/breadcrumb';
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const token = (await cookies()).get('session')?.value;
+  if (!token) redirect('/login?next=/admin');
+
+  try {
+    await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
+  } catch {
+    redirect('/login?next=/admin');
+  }
   return (
     <SidebarProvider>
       <AppSidebar />

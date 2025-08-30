@@ -1,4 +1,4 @@
-import { PUBLIC_ROUTES } from '@/constants';
+import { EMAIL_SUPPORT, PUBLIC_ROUTES } from '@/constants';
 import { Phone, Mail, House } from 'lucide-react';
 import Link from 'next/link';
 export default function TopBar() {
@@ -16,13 +16,8 @@ export default function TopBar() {
 
         <div className='hidden md:flex items-center gap-4 text-xs'>
           <div className='flex items-center gap-1'>
-            <Phone className='w-4 h-4' />
-            <span>0221 3 993 999</span>
-          </div>
-          <span>•</span>
-          <div className='flex items-center gap-1'>
             <Mail className='w-4 h-4' />
-            <span>thcsdongthan@edu.vn</span>
+            <span>{EMAIL_SUPPORT}</span>
           </div>
         </div>
       </div>

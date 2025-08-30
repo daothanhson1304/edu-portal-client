@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Facebook, Youtube } from 'lucide-react';
+import { EMAIL_SUPPORT } from '@/constants';
 
 export default function Footer() {
   return (
@@ -11,14 +12,10 @@ export default function Footer() {
               Trường Trung học Cơ sở Đồng Than
             </div>
             <p className='mb-2'>
-              Địa chỉ:{' '}
-              <strong>Số 123, đường 206, xã Hoàn Long, tỉnh Hưng Yên</strong>
+              Địa chỉ: <strong>Đường 206, Xã Hoàn Long, Tỉnh Hưng Yên</strong>
             </p>
             <p className='mb-1'>
-              Số điện thoại liên hệ: <strong>0221 3 993 999</strong>
-            </p>
-            <p className='mb-1'>
-              Email: <strong>thcsdongthan@edu.vn</strong>
+              Email: <strong>{EMAIL_SUPPORT}</strong>
             </p>
             <p className='mt-2 text-xs italic'>
               “Chất lượng giáo dục là nền tảng – Học sinh là trung tâm”
