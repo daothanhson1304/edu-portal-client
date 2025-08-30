@@ -88,7 +88,6 @@ export default function ContactForm() {
       if (!res.ok) throw new Error(json?.error || 'Gửi thất bại');
 
       setOk(true);
-      (e.currentTarget as HTMLFormElement).reset();
 
       // Reset token & widget để lấy token mới cho lần sau
       setCaptchaToken('');

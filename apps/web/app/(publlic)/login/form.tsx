@@ -36,6 +36,7 @@ export function LoginForm() {
 
     try {
       setPending(true);
+      console.log('BASE_URL', BASE_URL);
       const res = await fetch(`${BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,7 +46,7 @@ export function LoginForm() {
       const json = await res.json().catch(() => ({}));
       console.log('json', json);
       if (!res.ok) throw new Error(json?.error || 'Đăng nhập thất bại');
-
+      console.log('next', next);
       window.location.href = next;
     } catch (err: any) {
       setMessage(err.message || 'Đăng nhập thất bại');
