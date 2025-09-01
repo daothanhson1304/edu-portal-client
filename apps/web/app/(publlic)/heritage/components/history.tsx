@@ -43,21 +43,22 @@ const historyData = [
     event: 'Xây dựng thêm phòng học kiên cố thay cho lớp học tranh tre nứa lá.',
   },
   {
-    date: '2000',
+    date: '1994',
     event: 'Hoàn thành khu nhà học 2 tầng, đáp ứng nhu cầu học sinh tăng cao.',
   },
   {
     date: '2010',
-    event: 'Trường đạt chuẩn Quốc gia giai đoạn 1.',
+    event:
+      'Kỷ niệm 50 năm thành lập trường, triển khai chương trình giáo dục toàn diện.',
   },
   {
     date: '2015',
-    event: 'Kỷ niệm 70 năm thành lập, nâng cấp trang thiết bị dạy học.',
+    event: 'Kỷ niệm 55 năm thành lập, nâng cấp trang thiết bị dạy học.',
   },
   {
     date: '2020',
     event:
-      'Trường đạt chuẩn Quốc gia giai đoạn 2, cơ sở vật chất khang trang hiện đại.',
+      'Nhà trường tổ chức đón trường chuẩn quốc gia mức độ 1 và kỷ niệm 60 năm thành lập trường.',
   },
 ];
 

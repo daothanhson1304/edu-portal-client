@@ -21,7 +21,7 @@ export default function Menu() {
         <NavigationMenu viewport={false}>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Giới hiệu</NavigationMenuTrigger>
+              <NavigationMenuTrigger>Giới thiệu</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className='grid w-[200px] gap-4'>
                   <li>
@@ -30,9 +30,9 @@ export default function Menu() {
                         Lịch sử và truyền thống
                       </Link>
                     </NavigationMenuLink>
-                    <NavigationMenuLink asChild>
+                    {/* <NavigationMenuLink asChild>
                       <Link href={PUBLIC_ROUTES.TEAMS}>Cơ cấu tổ chức</Link>
-                    </NavigationMenuLink>
+                    </NavigationMenuLink> */}
                     <NavigationMenuLink asChild>
                       <Link href={PUBLIC_ROUTES.VISION}>
                         Tầm nhìn – Sứ mạng

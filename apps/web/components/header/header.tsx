@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Menu from './menu';
-import Logo from '@/public/images/logo.jpg';
+import Logo from '@/public/images/logo.png';
 import Link from 'next/link';
 
 export default function Header() {

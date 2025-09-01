@@ -64,7 +64,7 @@ function MobileMenu() {
                 <LinkItem href={PUBLIC_ROUTES.HERITAGE}>
                   Lịch sử và truyền thống
                 </LinkItem>
-                <LinkItem href={PUBLIC_ROUTES.TEAMS}>Cơ cấu tổ chức</LinkItem>
+                {/* <LinkItem href={PUBLIC_ROUTES.TEAMS}>Cơ cấu tổ chức</LinkItem> */}
                 <LinkItem href={PUBLIC_ROUTES.VISION}>
                   Tầm nhìn – Sứ mạng
                 </LinkItem>
