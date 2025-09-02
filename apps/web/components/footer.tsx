@@ -12,7 +12,7 @@ export default function Footer() {
               Trường Trung học Cơ sở Đồng Than
             </div>
             <p className='mb-2'>
-              Địa chỉ: <strong>Đường 206, Xã Hoàn Long, Tỉnh Hưng Yên</strong>
+              Địa chỉ: <strong>Đường 318, Xã Hoàn Long, Tỉnh Hưng Yên</strong>
             </p>
             <p className='mb-1'>
               Email: <strong>{EMAIL_SUPPORT}</strong>

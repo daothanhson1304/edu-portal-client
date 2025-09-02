@@ -4,7 +4,7 @@ import HistoryTable from './components/history';
 export default function SchoolHistoryPage() {
   const school = {
     name: 'Trường THCS Đồng Than',
-    address: 'Đường 206, xã Hoàn Long, Tỉnh Hưng Yên',
+    address: 'Đường 318, xã Hoàn Long, Tỉnh Hưng Yên',
     foundedYear: '1960',
     yearsActive: '26',
   };
