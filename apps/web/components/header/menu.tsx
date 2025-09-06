@@ -44,6 +44,9 @@ export default function Menu() {
                         Cơ sở vật chất
                       </Link>
                     </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <Link href={PUBLIC_ROUTES.GALLERY}>Thư viện ảnh</Link>
+                    </NavigationMenuLink>
                   </li>
                 </ul>
               </NavigationMenuContent>

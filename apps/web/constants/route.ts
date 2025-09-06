@@ -25,4 +25,5 @@ export const PUBLIC_ROUTES = {
   TEAMS: '/teams',
   FACILITIES: '/facilities',
   VISION: '/vision',
+  GALLERY: '/gallery',
 };
