@@ -10,6 +10,7 @@ export const ADMIN_ROUTES = {
   NOTICES: '/admin/notices',
   NEWS: '/admin/news',
   NEWS_CREATE: '/admin/news/create',
+  GALLERY: '/admin/gallery',
 };
 
 export const PUBLIC_ROUTES = {
@@ -25,4 +26,5 @@ export const PUBLIC_ROUTES = {
   TEAMS: '/teams',
   FACILITIES: '/facilities',
   VISION: '/vision',
+  GALLERY: '/gallery',
 };

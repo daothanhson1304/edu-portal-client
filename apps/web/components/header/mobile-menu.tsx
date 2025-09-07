@@ -71,6 +71,7 @@ function MobileMenu() {
                 <LinkItem href={PUBLIC_ROUTES.FACILITIES}>
                   Cơ sở vật chất
                 </LinkItem>
+                <LinkItem href={PUBLIC_ROUTES.GALLERY}>Thư viện ảnh</LinkItem>
               </CollapsibleContent>
             </Collapsible>
 
