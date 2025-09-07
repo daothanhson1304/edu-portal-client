@@ -7,6 +7,7 @@ import {
   FileText,
   Frame,
   GalleryVerticalEnd,
+  Image as ImageIcon,
   Map,
   PieChart,
   Settings2,
@@ -61,6 +62,11 @@ const data = {
       title: 'Văn bản',
       url: ADMIN_ROUTES.DOCUMENTS,
       icon: FileText,
+    },
+    {
+      title: 'Thư viện ảnh',
+      url: ADMIN_ROUTES.GALLERY,
+      icon: ImageIcon,
     },
   ],
 };
