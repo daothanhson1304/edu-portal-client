@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
           id: file.split('-')[0], // Use timestamp as ID
           filename: file,
           src: `/images/gallery/${file}`,
-          alt: file.split('.')[0].replace(/^\d+-/, ''), // Remove timestamp prefix
+          alt: file.split('.')[0]?.replace(/^\d+-/, '') || '', // Remove timestamp prefix
           category: 'Tổng quan', // Default category, can be enhanced with metadata
           uploadedAt: stats.birthtime.toISOString().split('T')[0],
           size: stats.size,
@@ -41,7 +41,8 @@ export async function GET(request: NextRequest) {
     // Sort by upload date (newest first)
     images.sort(
       (a, b) =>
-        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+        new Date(b.uploadedAt || '').getTime() -
+        new Date(a.uploadedAt || '').getTime()
     );
 
     // Filter by category if specified

@@ -25,8 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@edu/ui/components/select';
-import { Upload, X, Edit2, Trash2, Plus } from 'lucide-react';
-import { toast } from 'sonner';
+import { Upload, Edit2, Trash2, Plus } from 'lucide-react';
+import { toast } from '@edu/ui/components/sonner';
 
 const categories = ['Tổng quan', 'Cơ sở vật chất', 'Hoạt động'];
 
@@ -94,7 +94,7 @@ export default function AdminGalleryPage() {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('alt', file.name.split('.')[0]);
+        formData.append('alt', file.name.split('.')[0] || '');
         formData.append('category', 'Tổng quan');
 
         const response = await fetch('/nextapi/gallery/upload', {

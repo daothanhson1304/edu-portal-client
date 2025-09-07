@@ -1,16 +1,18 @@
-import { Manrope } from 'next/font/google';
+import { Be_Vietnam_Pro } from 'next/font/google';
 
 import '@edu/ui/globals.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@edu/ui/components/sonner';
 
-const fontSans = Manrope({
+const fontSans = Be_Vietnam_Pro({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
 });
 
-const fontMono = Manrope({
+const fontMono = Be_Vietnam_Pro({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-mono',
 });
 
