@@ -7,11 +7,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@edu/ui/components/sidebar';
-import { ADMIN_ROUTES } from '@/constants';
+import { PUBLIC_ROUTES } from '@/constants';
 
 export function NavLogo() {
   return (
-    <Link href={ADMIN_ROUTES.HOME} className='cursor-pointer'>
+    <Link href={PUBLIC_ROUTES.HOME} className='cursor-pointer'>
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton

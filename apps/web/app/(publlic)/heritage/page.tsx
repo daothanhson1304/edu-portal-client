@@ -1,5 +1,7 @@
 import Image from 'next/image';
 import HistoryTable from './components/history';
+import { Card, CardContent } from '@edu/ui/components/card';
+import { generateMetadata } from '@/utils';
 
 export default function SchoolHistoryPage() {
   const school = {
@@ -29,22 +31,22 @@ export default function SchoolHistoryPage() {
       <div className='max-w-7xl mx-auto'>
         <div className='overflow-hidden'>
           {/* Hero */}
-          <div className='relative aspect-[21/9] w-full'>
-            <Image
-              src='/images/abc.jpg'
-              alt='school building'
-              className='object-cover'
-              placeholder='blur'
-              fill
-              blurDataURL='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJScgaGVpZ2h0PSc1MCUnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PC9zdmc+'
-            />
-            {/* <div className='absolute inset-0 bg-gradient-to-b from-transparent to-black/40' /> */}
-            <div className='absolute left-6 bottom-6 text-white'>
-              <h1 className='text-2xl md:text-3xl font-semibold drop-shadow'>
-                {content.title}
-              </h1>
-            </div>
-          </div>
+          <Card className='overflow-hidden shadow-lg border border-gray-200 py-0'>
+            <CardContent className='p-0'>
+              <div className='relative w-full aspect-[16/7]'>
+                <Image
+                  src='/images/abc.jpg'
+                  alt='Cơ sở vật chất'
+                  fill
+                  className='object-cover'
+                  priority
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <h2 className='text-2xl md:text-3xl font-bold text-primary mt-6'>
+            {content.title}
+          </h2>
 
           {/* Content */}
           <div className='mt-10'>
@@ -95,7 +97,4 @@ export default function SchoolHistoryPage() {
   );
 }
 
-export const metadata = {
-  title: 'Lịch sử và truyền thống',
-  description: 'Lịch sử và truyền thống của trường THCS Đồng Than',
-};
+export const metadata = generateMetadata('Lịch sử và truyền thống');

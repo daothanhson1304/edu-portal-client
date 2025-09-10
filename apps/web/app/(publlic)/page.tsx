@@ -6,6 +6,7 @@ import {
   News,
   Notification,
 } from '@/components/sections';
+import { generateMetadata } from '@/utils';
 
 export default function HomePage() {
   return (
@@ -20,7 +21,4 @@ export default function HomePage() {
   );
 }
 
-export const metadata = {
-  title: 'Trường THCS Đồng Than',
-  description: 'Trường THCS Đồng Than',
-};
+export const metadata = generateMetadata('Trang chủ');

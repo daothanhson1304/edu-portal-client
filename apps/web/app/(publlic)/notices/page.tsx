@@ -12,14 +12,12 @@ import {
 import { Card, CardContent } from '@edu/ui/components/card';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/constants';
+import { generateMetadata } from '@/utils';
 import { Controls } from '@/components/pagination';
 import Pagination from '@/components/pagination/pagination';
 import { PaginationInfo, PostSummary, SearchParams } from '@/types';
 
-export const metadata: Metadata = {
-  title: 'Thông báo | Trường THCS Đồng Than',
-  description: 'Thông báo',
-};
+export const metadata: Metadata = generateMetadata('Thông báo');
 
 export const revalidate = 0;
 

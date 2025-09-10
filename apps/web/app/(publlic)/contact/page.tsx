@@ -1,11 +1,12 @@
 // app/contact/page.tsx (Server Component)
 import { Metadata } from 'next';
 import { ContactForm } from '@/components/contact';
+import { generateMetadata } from '@/utils';
 
-export const metadata: Metadata = {
-  title: 'Liên hệ | Trường THCS Đồng Than',
-  description: 'Liên hệ với chúng tôi',
-};
+export const metadata: Metadata = generateMetadata(
+  'Liên hệ',
+  'Liên hệ với chúng tôi'
+);
 
 export default function ContactPage() {
   return (

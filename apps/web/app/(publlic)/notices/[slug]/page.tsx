@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { BASE_URL } from '@/constants';
 import { formatDateTime } from '@/lib';
-import { htmlToPlain } from '@/lib/html';
+import { htmlToPlain } from '@/utils';
 import { Calendar } from 'lucide-react';
 
 export const revalidate = 0;

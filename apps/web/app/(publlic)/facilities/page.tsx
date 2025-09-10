@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@edu/ui/components/card';
 import { Separator } from '@edu/ui/components/separator';
 import { Metadata } from 'next';
+import { generateMetadata } from '@/utils';
 
 const hero = '/images/facilities/hero.jpg';
 
@@ -58,7 +59,7 @@ export default function FacilitiesPage() {
 
       {/* Intro */}
       <section className='mt-6'>
-        <h2 className='text-2xl md:text-3xl font-bold text-red-700'>
+        <h2 className='text-2xl md:text-3xl font-bold text-primary'>
           Cơ sở vật chất Trường THCS Đồng Than
         </h2>
 
@@ -114,7 +115,4 @@ export default function FacilitiesPage() {
   );
 }
 
-export const metadata: Metadata = {
-  title: 'Cơ sở vật chất Trường THCS Đồng Than',
-  description: 'Cơ sở vật chất Trường THCS Đồng Than',
-};
+export const metadata: Metadata = generateMetadata('Cơ sở vật chất');

@@ -1,3 +1,5 @@
+import { generateMetadata } from '@/utils';
+
 export default function AboutPage() {
   return (
     <section className='py-16 px-6 max-w-4xl mx-auto'>
@@ -27,7 +29,4 @@ export default function AboutPage() {
   );
 }
 
-export const metadata = {
-  title: 'Giới thiệu về trường',
-  description: 'Thông tin về Trường THCS Đồng Than',
-};
+export const metadata = generateMetadata('Giới thiệu về trường');

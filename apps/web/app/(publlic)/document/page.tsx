@@ -1,5 +1,6 @@
 import DocsTable from '@/components/tables/docs-table';
 import { BASE_URL } from '@/constants';
+import { generateMetadata } from '@/utils';
 
 export const dynamic = 'force-static'; // ép build static
 export const revalidate = 0; // ISR: 24h. Đặt false nếu muốn SSG thuần
@@ -77,7 +78,4 @@ export default async function RegulationDocumentsPage() {
   );
 }
 
-export const metadata = {
-  title: 'Văn bản & Hồ sơ',
-  description: 'Văn bản & Hồ sơ',
-};
+export const metadata = generateMetadata('Văn bản & Hồ sơ');

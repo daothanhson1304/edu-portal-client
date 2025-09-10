@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { LoginForm } from './form';
+import { generateMetadata } from '@/utils';
 
 export default function Page() {
   return (
@@ -19,7 +20,7 @@ export default function Page() {
   );
 }
 
-export const metadata = {
-  title: 'Đăng nhập | Trường THCS Đồng Than',
-  description: 'Đăng nhập để vào trang quản trị',
-};
+export const metadata = generateMetadata(
+  'Đăng nhập',
+  'Đăng nhập để vào trang quản trị'
+);

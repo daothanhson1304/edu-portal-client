@@ -1,6 +1,7 @@
 import { Separator } from '@edu/ui/components/separator';
 import { Badge } from '@edu/ui/components/badge';
 import { Card, CardContent } from '@edu/ui/components/card';
+import { generateMetadata } from '@/utils';
 import {
   Target,
   Lightbulb,
@@ -144,7 +145,4 @@ export default function VisionMissionPage() {
   );
 }
 
-export const metadata: Metadata = {
-  title: 'Tầm nhìn – Sứ mạng của Trường THCS Đồng Thần',
-  description: 'Tầm nhìn – Sứ mạng của Trường THCS Đồng Thần',
-};
+export const metadata: Metadata = generateMetadata('Tầm nhìn – Sứ mạng');

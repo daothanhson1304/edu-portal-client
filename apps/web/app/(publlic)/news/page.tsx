@@ -12,14 +12,12 @@ import {
 import { Card, CardContent } from '@edu/ui/components/card';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/constants';
+import { generateMetadata } from '@/utils';
 import { Controls } from '@/components/pagination';
 import Pagination from '@/components/pagination/pagination';
 import { PaginationInfo, PostSummary, SearchParams } from '@/types';
 
-export const metadata: Metadata = {
-  title: 'Tin tức | Trường THCS Đồng Than',
-  description: 'Tin tức',
-};
+export const metadata: Metadata = generateMetadata('Tin tức');
 
 export const revalidate = 0;
 
@@ -37,7 +35,7 @@ async function getPosts(
 
   const url = `${BASE_URL}/api/posts?${params.toString()}`;
   const res = await fetch(url, {
-    cache: 'no-store', // Tắt cache hoàn toàn
+    cache: 'no-store',
     next: { revalidate },
   });
   if (!res.ok) return { data: [], pagination: null };
