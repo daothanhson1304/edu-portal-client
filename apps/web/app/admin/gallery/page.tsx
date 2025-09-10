@@ -25,15 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@edu/ui/components/select';
-import { Upload, Edit2, Trash2, Plus } from 'lucide-react';
+import { Upload, Edit2, Trash2, Plus, Loader2 } from 'lucide-react';
 import { toast } from '@edu/ui/components/sonner';
+import { BASE_URL } from '@/constants';
 
 const categories = ['Tổng quan', 'Cơ sở vật chất', 'Hoạt động'];
 
 interface GalleryImage {
   id: string;
   filename: string;
-  src: string;
+  url: string;
   alt: string;
   category: string;
   uploadedAt: string;
@@ -43,6 +44,7 @@ interface GalleryImage {
 export default function AdminGalleryPage() {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -54,7 +56,7 @@ export default function AdminGalleryPage() {
   const fetchImages = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/nextapi/gallery');
+      const response = await fetch(`${BASE_URL}/api/gallery`);
       const data = await response.json();
       if (response.ok) {
         setImages(data.images);
@@ -80,24 +82,26 @@ export default function AdminGalleryPage() {
   const handleFileUpload = async (files: FileList | null) => {
     if (!files) return;
 
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Chỉ được upload file ảnh');
-        continue;
-      }
+    setUploading(true);
 
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('File quá lớn. Tối đa 10MB');
-        continue;
-      }
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) {
+          toast.error('Chỉ được upload file ảnh');
+          continue;
+        }
 
-      try {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error('File quá lớn. Tối đa 10MB');
+          continue;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('alt', file.name.split('.')[0] || '');
         formData.append('category', 'Tổng quan');
 
-        const response = await fetch('/nextapi/gallery/upload', {
+        const response = await fetch(`${BASE_URL}/api/gallery/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -106,13 +110,17 @@ export default function AdminGalleryPage() {
 
         if (response.ok) {
           toast.success(`Đã upload ảnh: ${file.name}`);
-          fetchImages(); // Refresh the list
         } else {
           toast.error(result.error || 'Lỗi khi upload ảnh');
         }
-      } catch (error) {
-        toast.error('Lỗi khi upload ảnh');
       }
+
+      // Refresh the list after all uploads
+      await fetchImages();
+    } catch (error) {
+      toast.error('Lỗi khi upload ảnh');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -124,12 +132,9 @@ export default function AdminGalleryPage() {
 
   const handleDelete = async (image: GalleryImage) => {
     try {
-      const response = await fetch(
-        `/nextapi/gallery/upload?filename=${image.filename}`,
-        {
-          method: 'DELETE',
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/gallery/${image.id}`, {
+        method: 'DELETE',
+      });
 
       if (response.ok) {
         toast.success('Đã xóa ảnh');
@@ -148,18 +153,44 @@ export default function AdminGalleryPage() {
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEdit = (formData: FormData) => {
+  const handleSaveEdit = async (formData: FormData) => {
     const alt = formData.get('alt') as string;
     const category = formData.get('category') as string;
 
-    setImages(prev =>
-      prev.map(img =>
-        img.id === editingImage.id ? { ...img, alt, category } : img
-      )
-    );
-    setIsEditDialogOpen(false);
-    setEditingImage(null);
-    toast.success('Đã cập nhật thông tin ảnh');
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/gallery/${editingImage.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            filename: editingImage.filename,
+            alt,
+            category,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Update local state
+        setImages(prev =>
+          prev.map(img =>
+            img.id === editingImage.id ? { ...img, alt, category } : img
+          )
+        );
+        setIsEditDialogOpen(false);
+        setEditingImage(null);
+        toast.success('Đã cập nhật thông tin ảnh');
+      } else {
+        toast.error(result.error || 'Lỗi khi cập nhật thông tin ảnh');
+      }
+    } catch (error) {
+      toast.error('Lỗi khi cập nhật thông tin ảnh');
+    }
   };
 
   return (
@@ -174,9 +205,13 @@ export default function AdminGalleryPage() {
         </div>
         <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Plus className='w-4 h-4 mr-2' />
-              Thêm ảnh mới
+            <Button disabled={uploading}>
+              {uploading ? (
+                <Loader2 className='w-4 h-4 mr-2 animate-spin' />
+              ) : (
+                <Plus className='w-4 h-4 mr-2' />
+              )}
+              {uploading ? 'Đang upload...' : 'Thêm ảnh mới'}
             </Button>
           </DialogTrigger>
           <DialogContent className='max-w-md'>
@@ -189,23 +224,40 @@ export default function AdminGalleryPage() {
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   dragOver
                     ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-gray-400'
+                    : uploading
+                      ? 'border-gray-300 bg-gray-50 opacity-60'
+                      : 'border-gray-300 hover:border-gray-400'
                 }`}
                 onDrop={handleDrop}
                 onDragOver={e => {
                   e.preventDefault();
-                  setDragOver(true);
+                  if (!uploading) setDragOver(true);
                 }}
                 onDragLeave={() => setDragOver(false)}
               >
-                <Upload className='w-12 h-12 mx-auto text-gray-400 mb-4' />
-                <p className='text-gray-600 mb-2'>Kéo thả ảnh vào đây hoặc</p>
-                <Button
-                  variant='outline'
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  Chọn file
-                </Button>
+                {uploading ? (
+                  <>
+                    <Loader2 className='w-12 h-12 mx-auto text-blue-500 mb-4 animate-spin' />
+                    <p className='text-gray-600 mb-2'>Đang upload ảnh...</p>
+                    <p className='text-sm text-gray-500'>
+                      Vui lòng chờ trong giây lát
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Upload className='w-12 h-12 mx-auto text-gray-400 mb-4' />
+                    <p className='text-gray-600 mb-2'>
+                      Kéo thả ảnh vào đây hoặc
+                    </p>
+                    <Button
+                      variant='outline'
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      Chọn file
+                    </Button>
+                  </>
+                )}
                 <input
                   ref={fileInputRef}
                   type='file'
@@ -213,6 +265,7 @@ export default function AdminGalleryPage() {
                   accept='image/*'
                   className='hidden'
                   onChange={e => handleFileUpload(e.target.files)}
+                  disabled={uploading}
                 />
               </div>
               <p className='text-sm text-gray-500 text-center'>
@@ -264,47 +317,88 @@ export default function AdminGalleryPage() {
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
           {filteredImages.map(image => (
-            <Card key={image.id} className='overflow-hidden'>
-              <div className='relative'>
+            <Card
+              key={image.id}
+              className='overflow-hidden group hover:shadow-lg transition-all duration-300 border-0 shadow-md'
+            >
+              <div className='relative overflow-hidden'>
                 <Image
-                  src={image.src}
+                  src={image.url}
                   alt={image.alt}
                   width={300}
                   height={200}
-                  className='w-full h-48 object-cover'
+                  className='w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105'
                 />
-                <div className='absolute top-2 right-2 flex gap-1'>
+                {/* Gradient overlay */}
+                <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+
+                {/* Action buttons */}
+                <div className='absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                   <Button
                     size='icon'
                     variant='secondary'
-                    className='h-8 w-8'
+                    className='h-9 w-9 bg-white/90 hover:bg-white shadow-lg backdrop-blur-sm'
                     onClick={() => handleEdit(image)}
                   >
-                    <Edit2 className='h-4 w-4' />
+                    <Edit2 className='h-4 w-4 text-gray-700' />
                   </Button>
                   <Button
                     size='icon'
                     variant='destructive'
-                    className='h-8 w-8'
+                    className='h-9 w-9 bg-red-500/90 hover:bg-red-600 shadow-lg backdrop-blur-sm'
                     onClick={() => handleDelete(image)}
                   >
                     <Trash2 className='h-4 w-4' />
                   </Button>
                 </div>
+
+                {/* Category badge */}
+                <div className='absolute top-3 left-3'>
+                  <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'>
+                    {image.category}
+                  </span>
+                </div>
               </div>
-              <CardHeader className='pb-2'>
-                <CardTitle className='text-sm font-medium truncate'>
-                  {image.alt}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className='pt-0'>
-                <div className='space-y-1'>
-                  <p className='text-xs text-gray-500'>
-                    Danh mục: {image.category}
-                  </p>
-                  <p className='text-xs text-gray-500'>
-                    Upload: {image.uploadedAt}
-                  </p>
+
+              <CardContent className='p-4'>
+                <div className='space-y-3'>
+                  {/* Title */}
+                  <h3 className='font-semibold text-gray-900 line-clamp-2 leading-tight'>
+                    {image.alt}
+                  </h3>
+
+                  {/* Metadata */}
+                  <div className='space-y-2'>
+                    <div className='flex items-center text-xs text-gray-500'>
+                      <svg
+                        className='w-3 h-3 mr-1.5'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                      {new Date(image.uploadedAt).toLocaleDateString('vi-VN')}
+                    </div>
+
+                    <div className='flex items-center text-xs text-gray-500'>
+                      <svg
+                        className='w-3 h-3 mr-1.5'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path
+                          fillRule='evenodd'
+                          d='M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z'
+                          clipRule='evenodd'
+                        />
+                      </svg>
+                      {(image.size / 1024 / 1024).toFixed(1)} MB
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

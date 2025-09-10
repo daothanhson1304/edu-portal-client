@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { BASE_URL } from '@/constants';
 import { formatDateTime } from '@/lib';
-import { htmlToPlain } from '@/utils';
 import { Calendar } from 'lucide-react';
+import { htmlToPlain } from '@/utils/html';
 
 export const revalidate = 0;
 

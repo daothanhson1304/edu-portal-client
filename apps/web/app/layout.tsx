@@ -1,6 +1,8 @@
 import { Be_Vietnam_Pro } from 'next/font/google';
 
 import '@edu/ui/globals.css';
+import 'yet-another-react-lightbox/styles.css';
+import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@edu/ui/components/sonner';
 
